@@ -23,3 +23,15 @@ app.get("/test", (req, res) => {
     msg: "test",
   });
 });
+
+app.get("/lhy", (req, res) => {
+  res.json({
+    code: 200,
+    msg: "lhy shi dashabi",
+    data: {
+      name: "lhy",
+      age: 21,
+      gender: "女"
+    }
+  });
+});
