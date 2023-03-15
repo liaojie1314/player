@@ -11,9 +11,15 @@ const server = app.listen(process.env.PORT, () => {
   console.log(`Server Started on Port ${process.env.PORT}`);
 });
 
-app.get("/hello", (req, res) => {
+app.get("/", (req, res) => {
   res.json({
     code: 200,
-    msg: "hello"
+    msg: "hello",
+  });
+});
+app.get("/test", (req, res) => {
+  res.json({
+    code: 200,
+    msg: "test",
   });
 });
