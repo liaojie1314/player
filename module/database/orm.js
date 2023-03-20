@@ -1,12 +1,21 @@
 const mysql = require('mysql');
 // 数据库连接设置
+
 let orm_config = {
     host: '15.tcp.cpolar.top',//数据库地址
-    port:'13590',
+    port:'13590', //13590
     user: 'root',//用户名，没有可不填
     password: '1024',//密码，没有可不填
     database: 'player'//数据库名称
 }
+
+// let orm_config = {
+//     host: 'localhost',//数据库地址
+//     port:'3306', //13590
+//     user: 'root',//用户名，没有可不填
+//     password: '123456',//密码，没有可不填
+//     database: 'player'//数据库名称
+// }
  
 let options = {};
 let tableSQL = '';

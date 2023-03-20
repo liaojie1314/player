@@ -32,7 +32,8 @@ router.post('/login', (req, res) => {
   db.model('user').sql(`SELECT COUNT(*) as count FROM user WHERE name='${username}' AND password=${password}`, (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).send('Internal Server Error');
+      // res.status(500).send('Internal Server Error');
+      res.status(500).send(results[0]);
       return;
     }
     if (results[0].count > 0) {
@@ -64,6 +65,17 @@ router.post('/signin', (req, res) => {
       return;
     }
     res.json({ code: 0, message: '注册成功', token: token });
+  });
+});
+
+router.get('/test', (req, res) => {
+  db.model('user').sql(`select count(*) as count from user`, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Failed to execute SQL query' });
+    } else {
+      res.json({ result: results[0].count, message: 'Database connection successful' });
+    }
   });
 });
 
