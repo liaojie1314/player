@@ -32,8 +32,7 @@ router.post('/login', (req, res) => {
   db.model('user').sql(`SELECT COUNT(*) as count FROM user WHERE name='${username}' AND password=${password}`, (err, results) => {
     if (err) {
       console.error(err);
-      // res.status(500).send('Internal Server Error');
-      res.status(500).send(results[0]);
+      res.status(500).send('Internal Server Error');
       return;
     }
     if (results[0].count > 0) {
@@ -78,5 +77,25 @@ router.get('/test', (req, res) => {
     }
   });
 });
+
+//搜索
+router.post('/search', (req, res) => {
+  //获取搜索内容
+  const searchText = req.body.searchText;
+  //在数据库表video中进行模糊查找
+  
+  const searchQuery = `SELECT a.name,a.cover,a.type,b.name as tag,a.description FROM video as a,video_tag as b WHERE a.name LIKE '%${searchText}%' and a.id = b.video_id`;
+
+  db.model('video').sql(searchQuery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200);
+    res.json({ code: 0, message: '搜索成功',data:results });
+  });
+});
+
 
 module.exports = router;
