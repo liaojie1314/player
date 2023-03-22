@@ -125,7 +125,7 @@ router.post('/search', (req, res) => {
 
 //图片
 router.get('/pictures',(req,res)=>{
-  const sqlquery = `SELECT * FROM pictures;`;
+  const sqlquery = `SELECT * FROM pictures ORDER BY RAND() LIMIT 8`;
   db.model('pictures').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
@@ -133,7 +133,7 @@ router.get('/pictures',(req,res)=>{
       return;
     }
     res.status(200);
-    res.json({ code: 0, message: '查询成功', pictures:results});
+    res.json({ code: 0, message: '返回8张图片', pictures:results});
   });
 })
 
@@ -148,13 +148,13 @@ router.get('/anime',(req,res)=>{
       return;
     }
     res.status(200);
-    res.json({ code: 0, message: '查询成功', anime:results});
+    res.json({ code: 0, message: '随机选取8个动漫', anime:results});
   });
 })
 
 //movie
 router.get('/movie',(req,res)=>{
-  //随机选取8个动漫
+  //随机选取8个电影
   const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电影' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
   db.model('video').sql(sqlquery, (err, results) => {
     if (err) {
@@ -163,13 +163,13 @@ router.get('/movie',(req,res)=>{
       return;
     }
     res.status(200);
-    res.json({ code: 0, message: '查询成功', movie:results});
+    res.json({ code: 0, message: '随机选取8个电影', movie:results});
   });
 })
 
 //tv
 router.get('/tv',(req,res)=>{
-  //随机选取8个动漫
+  //随机选取8个电视剧
   const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
   db.model('video').sql(sqlquery, (err, results) => {
     if (err) {
@@ -178,13 +178,13 @@ router.get('/tv',(req,res)=>{
       return;
     }
     res.status(200);
-    res.json({ code: 0, message: '查询成功', tv:results});
+    res.json({ code: 0, message: '随机选取8个电视剧', tv:results});
   });
 })
 
 //variety
 router.get('/variety',(req,res)=>{
-  //随机选取8个动漫
+  //随机选取8个综艺
   const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
   db.model('video').sql(sqlquery, (err, results) => {
     if (err) {
@@ -193,18 +193,22 @@ router.get('/variety',(req,res)=>{
       return;
     }
     res.status(200);
-    res.json({ code: 0, message: '查询成功', variety:results});
+    res.json({ code: 0, message: '随机选取8个综艺', variety:results});
   });
 })
 
 //排行榜
 router.get('/rank',(req,res)=>{
   //随机选取10个动漫
-  const videoQuery1 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  const videoQuery1 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 10`
   //随机选取10个综艺
-  const videoQuery2 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
-  //随机选取8个电视剧
-  const videoQuery3 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  const videoQuery2 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 10`
+  //随机选取10个电视剧
+  const videoQuery3 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 10`
+  //随机选取10个图片
+  const pictureQuery = `SELECT * FROM pictures ORDER BY RAND() LIMIT 10`;
+  //随机选取10张播出表数据
+  const retateQuery = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag,video_round WHERE video.id = video_tag.video_id and video_tag.name <> 'Unknown'  and video_round.video_id = video.id ORDER BY RAND() LIMIT 10`
   //第一次
   db.model('video').sql(videoQuery1, (err, results1) => {
     if (err) {
@@ -220,7 +224,6 @@ router.get('/rank',(req,res)=>{
         res.status(500).send('Internal Server Error');
         return;
       }
-      video2 = results2;
       //第三次
       db.model('video').sql(videoQuery3, (err, results3) => {
         if (err) {
@@ -228,9 +231,23 @@ router.get('/rank',(req,res)=>{
           res.status(500).send('Internal Server Error');
           return;
         }
-        video3 = results3;
-        res.status(200);
-        res.json({ code: 0, message: '排行榜',"anime":results1,"variety":results2,"TV":results3 });
+        //第四次
+        db.model('pictures').sql(pictureQuery, (err, results4) => {
+          if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
+          db.model('pictures').sql(pictureQuery, (err, results5) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send('Internal Server Error');
+              return;
+            }
+            res.status(200);
+          res.json({ code: 0, message: '排行榜', anime:results1, variety:results2, TV:results3, pictures:results4,rotate:results5});
+          });
+        });
       });
     });
   });
@@ -253,5 +270,33 @@ router.get('/rotate', (req, res) => {
     }
   });
 });
+
+//返回video_url
+router.post('/get_video_url', (req, res) => {
+  const video_id = req.body.video_id;
+  const sqlquery = `SELECT video_episodes.episodes, video_road.name as road, video_episodes.url FROM video, video_episodes, video_road WHERE video_episodes.road_id = video_road.id AND video_road.video_id = video.id AND video.id = '${video_id}' ORDER BY video_road.name, video_episodes.episodes`
+  db.model('user').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Failed to execute SQL query' });
+    } else {
+      const data = results.reduce((acc, result) => {
+        let videoData = acc.find((data) => data.road === result.road);
+        if (!videoData) {
+          videoData = { road: result.road, episodes: [] };
+          acc.push(videoData);
+        }
+        videoData.episodes.push({
+          episode: result.episodes,
+          url: result.url,
+        });
+        return acc;
+      }, []);
+      res.status(200).json({ code: 0, message: 'get_video_url', data });
+    }
+  });
+});
+
+
 
 module.exports = router;
