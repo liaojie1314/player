@@ -123,131 +123,88 @@ router.post('/search', (req, res) => {
   });
 });
 
-
-//主页
-router.get('/index', (req, res) => {
-  let videoData;
-  //随机选取8个动漫
-  const videoQuery1 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
-  //随机选取8个电影
-  const videoQuery2 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '电影' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
-  //随机选取8个综艺
-  const videoQuery3 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
-  //随机选取8个电视剧
-  const videoQuery4 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
-  //pictures表
-  const picturesQuery = `SELECT * FROM pictures;`;
-  // const videoQuery = `
-  //   (SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag
-  //     FROM video,video_tag
-  //     WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown'
-  //     ORDER BY RAND()
-  //     LIMIT 8)
-  //     UNION
-  //     (SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag
-  //     FROM video,video_tag
-  //     WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown'
-  //     ORDER BY RAND()
-  //     LIMIT 8)
-  //     UNION
-  //     (SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag
-  //     FROM video,video_tag
-  //     WHERE type = '电影' and video.id = video_tag.video_id and video_tag.name <> 'Unknown'
-  //     ORDER BY RAND()
-  //     LIMIT 8)
-  //     UNION
-  //     (SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag
-  //     FROM video,video_tag
-  //     WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown'
-  //     ORDER BY RAND()
-  //     LIMIT 8);
-  // `;
-  
-  //第一次
-  db.model('video').sql(videoQuery1, (err, Results1) => {
+//图片
+router.get('/pictures',(req,res)=>{
+  const sqlquery = `SELECT * FROM pictures;`;
+  db.model('pictures').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
       return;
     }
-    video1 = Results1;
-    //第二次
-    db.model('video').sql(videoQuery2, (err, Results2) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-        return;
-      }
-      video2 = Results2;
-      //第三次
-      db.model('video').sql(videoQuery3, (err, Results3) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send('Internal Server Error');
-          return;
-        }
-        video3 = Results3;
-        //第四次
-        db.model('video').sql(videoQuery4, (err, Results4) => {
-          if (err) {
-            console.error(err);
-            res.status(500).send('Internal Server Error');
-            return;
-          }
-          video4 = Results4;
-          //pictures
-          db.model('video').sql(picturesQuery, (err, picture_Results) => {
-            if (err) {
-              console.error(err);
-              res.status(500).send('Internal Server Error');
-              return;
-            }
-            pictures = picture_Results;
-            res.status(200);
-            res.json({ code: 0, message: '查询成功', "anime":Results1,"movie":Results2,"variety":Results3,"TV":Results4,"pictures":pictures });
-          });
-        });
-      });
-    });
+    res.status(200);
+    res.json({ code: 0, message: '查询成功', pictures:results});
   });
-  // // 第一次MySQL查询，获取video表数据
-  // db.model('video').sql(videoQuery, (err, videoResults) => {
-  //   if (err) {
-  //     console.error(err);
-  //     res.status(500).send('Internal Server Error');
-  //     return;
-  //   }
+})
 
-  //   videoData = videoResults;
+//anime
+router.get('/anime',(req,res)=>{
+  //随机选取8个动漫
+  const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  db.model('video').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200);
+    res.json({ code: 0, message: '查询成功', anime:results});
+  });
+})
 
-  //   // 第二次MySQL查询，获取pictures表数据
-  //   db.model('pictures').sql(picturesQuery, (err, picturesResults) => {
-  //     if (err) {
-  //       console.error(err);
-  //       res.status(500).send('Internal Server Error');
-  //       return;
-  //     }
+//movie
+router.get('/movie',(req,res)=>{
+  //随机选取8个动漫
+  const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电影' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  db.model('video').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200);
+    res.json({ code: 0, message: '查询成功', movie:results});
+  });
+})
 
-  //     // 将video表和pictures表数据合并
-  //     const data = {
-  //       video: videoData,
-  //       pictures: picturesResults
-  //     };
+//tv
+router.get('/tv',(req,res)=>{
+  //随机选取8个动漫
+  const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  db.model('video').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200);
+    res.json({ code: 0, message: '查询成功', tv:results});
+  });
+})
 
-//       res.status(200);
-//       res.json({ code: 0, message: '查询成功', data });
-//     });
-//   });
-});
+//variety
+router.get('/variety',(req,res)=>{
+  //随机选取8个动漫
+  const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  db.model('video').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    res.status(200);
+    res.json({ code: 0, message: '查询成功', variety:results});
+  });
+})
 
 //排行榜
 router.get('/rank',(req,res)=>{
   //随机选取10个动漫
-  const videoQuery1 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  const videoQuery1 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
   //随机选取10个综艺
-  const videoQuery2 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  const videoQuery2 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
   //随机选取8个电视剧
-  const videoQuery3 = `SELECT video.id, video.name, video.description, video.cover, video.type, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
+  const videoQuery3 = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' ORDER BY RAND() LIMIT 8`
   //第一次
   db.model('video').sql(videoQuery1, (err, results1) => {
     if (err) {
@@ -278,5 +235,23 @@ router.get('/rank',(req,res)=>{
     });
   });
 })
+
+//轮播表
+router.get('/rotate', (req, res) => {
+  const sqlquery = `select video.id,video.name,video.cover from video_round,video,video_tag where video.id = video_tag.video_id and video_round.video_id = video.id`
+  db.model('user').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Failed to execute SQL query' });
+    } else {
+      const smallArrays = [];
+      for (let i = 0; i < results.length; i += 12) {
+        smallArrays.push(results.slice(i, i + 12));
+      }
+      res.status(200);
+      res.json({ code:0, message: '轮播表', Monday:smallArrays[0], Tuesday:smallArrays[1], Wednesday:smallArrays[2], Thursday:smallArrays[3], Friday:smallArrays[4], Saturday:smallArrays[5], Sunday:smallArrays[6] });
+    }
+  });
+});
 
 module.exports = router;
