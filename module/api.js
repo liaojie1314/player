@@ -18,7 +18,7 @@ router.post('/login', (req, res) => {
     try {
       const decoded = Token.decode(token);
       if (decoded.username === username) {
-        // 如果解密成功，且用户名与请求一致，则返回登录成功
+        // 如果解密成功，且用户名与请求一致，则返回登录成功,并找到user_id返回给前端
         db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
           if (err) {
             console.error(err);
@@ -71,11 +71,11 @@ router.get('/signin', (req, res) => {
 });
 router.post('/signin', (req, res) => {
   //获取参数
-  const { username, password, gender} = req.body;
+  const { username, password} = req.body;
   //加密密码
   const payload = { username };
   const token = Token.encode(payload);
-  db.model('user').sql(`INSERT INTO user (name, password, gender) VALUES ('${username}', '${password}', '${gender}')`, (err, results) => {
+  db.model('user').sql(`INSERT INTO user (name, password) VALUES ('${username}', '${password}')`, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
@@ -208,7 +208,7 @@ router.get('/rank',(req,res)=>{
   //随机选取10个图片
   const pictureQuery = `SELECT * FROM pictures ORDER BY RAND() LIMIT 10`;
   //随机选取10张播出表数据
-  const retateQuery = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag,video_round WHERE video.id = video_tag.video_id and video_tag.name <> 'Unknown'  and video_round.video_id = video.id ORDER BY RAND() LIMIT 10`
+  const rotateQuery = `SELECT video.id, video.name, video.cover, video_tag.name as tag FROM video,video_tag,video_round WHERE video.id = video_tag.video_id and video_tag.name <> 'Unknown'  and video_round.video_id = video.id ORDER BY RAND() LIMIT 10`
   //第一次
   db.model('video').sql(videoQuery1, (err, results1) => {
     if (err) {
@@ -238,7 +238,8 @@ router.get('/rank',(req,res)=>{
             res.status(500).send('Internal Server Error');
             return;
           }
-          db.model('pictures').sql(pictureQuery, (err, results5) => {
+          //第五次
+          db.model('video_round').sql(rotateQuery, (err, results5) => {
             if (err) {
               console.error(err);
               res.status(500).send('Internal Server Error');
