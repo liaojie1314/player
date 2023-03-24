@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require("./database/orm");
 const Token = require('./token');
-
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 require("dotenv").config();
 
@@ -9,7 +9,66 @@ require("dotenv").config();
 router.get('/login', (req, res) => {
   res.json({message: '登录界面'});
 });
-router.post('/login', (req, res) => {
+// router.post('/login', (req, res) => {
+//   // 获取参数
+//   const { username, password, token } = req.body;
+
+//   // 如果有token，则尝试解密
+//   if (token) {
+//     try {
+//       const decoded = Token.decode(token);
+//       if (decoded.username === username) {
+//         // 如果解密成功，且用户名与请求一致，则返回登录成功,并找到user_id返回给前端
+//         db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
+//           if (err) {
+//             console.error(err);
+//             res.status(500).send('login Server Error');
+//             return;
+//           }
+//           res.json({ code: 0, message: '登录成功', user_id:user_id[0].id, token: token });
+//           return;
+//         })
+//       }
+//     } catch (err) {
+//       res.send("解密失败")
+//       // 如果解密失败，或用户名不一致，则忽略token，进行下一步验证
+//     }
+//   }
+//   if(password) {
+//   // 验证用户名和密码
+//   db.model('user').sql(`SELECT COUNT(*) as count FROM user WHERE name='${username}' AND password=${password}`, (err, results) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send('Internal Server Error');
+//       return;
+//     }
+//     if (results[0].count > 0) {
+//       db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
+//         if (err) {
+//           console.error(err);
+//           res.status(500).send('login Server Error');
+//           return;
+//         }
+//         // 生成新的token返回给客户端
+//         const payload = { username };
+//         const newToken = Token.encode(payload);
+//         res.json({ code: 0, message: '登录成功', user_id:user_id[0].id, token: newToken });
+//       })
+//     } else {
+//       res.json({ code: -1, message: '用户名或密码错误' });
+//     }
+//   });
+//   }
+//   else{
+//     res.json({ code: -1, message: '没输入密码' });
+//   }
+// });
+
+
+//注册
+
+
+router.post('/login', async (req, res) => {
   // 获取参数
   const { username, password, token } = req.body;
 
@@ -19,63 +78,81 @@ router.post('/login', (req, res) => {
       const decoded = Token.decode(token);
       if (decoded.username === username) {
         // 如果解密成功，且用户名与请求一致，则返回登录成功,并找到user_id返回给前端
-        db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
+        db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, async (err, results) => {
           if (err) {
             console.error(err);
             res.status(500).send('login Server Error');
             return;
           }
-          res.json({ code: 0, message: '登录成功', user_id:user_id[0].id, token: token });
-          return;
-        })
+          const user_id = results[0].id;
+          res.json({ code: 0, message: '登录成功', user_id:user_id });
+        });
+        return;
       }
     } catch (err) {
       res.send("解密失败")
       // 如果解密失败，或用户名不一致，则忽略token，进行下一步验证
     }
   }
-  if(password) {
+
   // 验证用户名和密码
-  db.model('user').sql(`SELECT COUNT(*) as count FROM user WHERE name='${username}' AND password=${password}`, (err, results) => {
+  db.model('user').sql(`SELECT id, password FROM user WHERE name='${username}'`, async (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
       return;
     }
-    if (results[0].count > 0) {
-      db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send('login Server Error');
-          return;
-        }
-        // 生成新的token返回给客户端
-        const payload = { username };
-        const newToken = Token.encode(payload);
-        res.json({ code: 0, message: '登录成功', user_id:user_id[0].id, token: newToken });
-      })
+    if (results.length === 0) {
+      res.json({ code: -1, message: '用户名或密码错误' });
+      return;
+    }
+    const user_id = results[0].id;
+    const hashedPassword = results[0].password;
+    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+    if (passwordMatch) {
+      const payload = { username };
+      const newToken = Token.encode(payload);
+      res.json({ code: 0, message: '登录成功', user_id:user_id, token: newToken });
     } else {
       res.json({ code: -1, message: '用户名或密码错误' });
     }
   });
-  }
-  else{
-    res.json({ code: -1, message: '没输入密码' });
-  }
 });
 
 
-//注册
+
+
+
 router.get('/signin', (req, res) => {
   res.json({message: '注册界面'});
 });
-router.post('/signin', (req, res) => {
+// router.post('/signin', (req, res) => {
+//   //获取参数
+//   const { username, password} = req.body;
+//   //加密密码
+//   const payload = { username };
+//   const token = Token.encode(payload);
+//   db.model('user').sql(`INSERT INTO user (name, password) VALUES ('${username}', '${password}')`, (err, results) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send('Internal Server Error');
+//       return;
+//     }
+//     res.json({ code: 0, message: '注册成功', token: token });
+//   });
+// });
+
+//测试数据库连接
+
+router.post('/signin', async (req, res) => {
   //获取参数
   const { username, password} = req.body;
   //加密密码
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
   const payload = { username };
   const token = Token.encode(payload);
-  db.model('user').sql(`INSERT INTO user (name, password) VALUES ('${username}', '${password}')`, (err, results) => {
+  db.model('user').sql(`INSERT INTO user (name, password) VALUES ('${username}', '${hashedPassword}')`, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
@@ -85,7 +162,8 @@ router.post('/signin', (req, res) => {
   });
 });
 
-//测试数据库连接
+
+
 router.get('/test', (req, res) => {
   db.model('user').sql(`select count(*) as count from user`, (err, results) => {
     if (err) {
@@ -110,6 +188,16 @@ router.post('/search', (req, res) => {
       return;
     }
     search_data = search_results;
+    if (!search_results || search_results.length === 0) {
+      res.status(200);
+      res.json({ code: 0, message: '未搜索到任何数据', data: [] });
+      return;
+    }
+    if (user_id === 0){
+      res.status(200);
+      res.json({ code: 0, message: 'user_id = 0', data:search_results });
+      return;
+    }
     const insertQuery = `insert into search_history (content,user_id) VALUES ('${msg}', '${user_id}');`;
     db.model('search_history').sql(insertQuery,(err,insert_results)=>{
       if (err) {
@@ -256,15 +344,15 @@ router.get('/rank',(req,res)=>{
 
 //轮播表
 router.get('/rotate', (req, res) => {
-  const sqlquery = `select video.id,video.name,video.cover from video_round,video,video_tag where video.id = video_tag.video_id and video_round.video_id = video.id`
+  const sqlquery = `select video.id,video.name,video.cover,video.episodes from video_round,video,video_tag where video.id = video_tag.video_id and video_round.video_id = video.id`
   db.model('user').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({ message: 'Failed to execute SQL query' });
     } else {
       const smallArrays = [];
-      for (let i = 0; i < results.length; i += 12) {
-        smallArrays.push(results.slice(i, i + 12));
+      for (let i = 0; i < results.length; i += 16) {
+        smallArrays.push(results.slice(i, i + 16));
       }
       res.status(200);
       res.json({ code:0, message: '轮播表', Monday:smallArrays[0], Tuesday:smallArrays[1], Wednesday:smallArrays[2], Thursday:smallArrays[3], Friday:smallArrays[4], Saturday:smallArrays[5], Sunday:smallArrays[6] });
@@ -273,31 +361,72 @@ router.get('/rotate', (req, res) => {
 });
 
 //返回video_url
-router.post('/get_video_url', (req, res) => {
+// router.post('/get_video_url', (req, res) => {
+//   const video_id = req.body.video_id;
+//   const sqlquery = `SELECT video_episodes.episodes, video_road.name as road, video_episodes.url FROM video, video_episodes, video_road WHERE video_episodes.road_id = video_road.id AND video_road.video_id = video.id AND video.id = '${video_id}' ORDER BY video_road.name, video_episodes.episodes`
+//   db.model('user').sql(sqlquery, (err, results) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).json({ message: 'Failed to execute SQL query' });
+//     } else {
+//       const data = results.reduce((acc, result) => {
+//         let videoData = acc.find((data) => data.road === result.road);
+//         if (!videoData) {
+//           videoData = { road: result.road, episodes: [] };
+//           acc.push(videoData);
+//         }
+//         videoData.episodes.push({
+//           episode: result.episodes,
+//           url: result.url,
+//         });
+//         return acc;
+//       }, []);
+//       res.status(200).json({ code: 0, message: 'get_video_url', data });
+//     }
+//   });
+// });
+
+//返回指定video_id信息
+router.post('/getVideoInfo', (req, res) => {
   const video_id = req.body.video_id;
-  const sqlquery = `SELECT video_episodes.episodes, video_road.name as road, video_episodes.url FROM video, video_episodes, video_road WHERE video_episodes.road_id = video_road.id AND video_road.video_id = video.id AND video.id = '${video_id}' ORDER BY video_road.name, video_episodes.episodes`
+  const sqlquery = `SELECT video.name, video.type, video.year,video.area, video.description,video.episodes,video_tag.name as tag FROM video, video_tag WHERE video.id = video_tag.video_id AND video.id = '${video_id}'`;
   db.model('user').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({ message: 'Failed to execute SQL query' });
     } else {
-      const data = results.reduce((acc, result) => {
-        let videoData = acc.find((data) => data.road === result.road);
-        if (!videoData) {
-          videoData = { road: result.road, episodes: [] };
-          acc.push(videoData);
-        }
-        videoData.episodes.push({
-          episode: result.episodes,
-          url: result.url,
-        });
-        return acc;
-      }, []);
-      res.status(200).json({ code: 0, message: 'get_video_url', data });
+      // const data = results.reduce((acc, result) => {
+      //   let videoData = acc.find((data) => data.road === result.road);
+      //   if (!videoData) {
+      //     videoData = { road: result.road, episodes: [] };
+      //     acc.push(videoData);
+      //   }
+      //   videoData.episodes.push({
+      //     episode: result.episodes,
+      //     url: result.url,
+      //   });
+      //   return acc;
+      // }, []);
+      // res.status(200).json({ code: 0, message: 'get_video_url', data });
+      res.status(200).json({ code: 0, message: 'get_video_info', results:results[0] });
     }
   });
 });
 
-
-
+router.post('/getHistory',(req,res)=>{
+  const user_id = req.body.user_id;
+  if (user_id === 0){
+    res.status(200).json({code:0,message:"user_id = 0", data:[]});
+    return;
+  }
+  const sqlquery = `select search_history.content from search_history where user_id = '${user_id}'`;
+  db.model('user').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({cosw:-1, message: 'Failed to execute SQL query' });
+    } else {
+      res.status(200).json({code:0,message:"getHistory", data:results});
+    };
+  });
+});
 module.exports = router;

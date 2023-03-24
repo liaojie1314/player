@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 22/03/2023 21:53:54
+ Date: 24/03/2023 18:03:31
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `video_road`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_video_id`(`video_id` ASC) USING BTREE,
   CONSTRAINT `fk_video_id` FOREIGN KEY (`video_id`) REFERENCES `video` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2044 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2769 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of video_road
@@ -943,5 +943,69 @@ INSERT INTO `video_road` VALUES (2036, 'load_3', 2670);
 INSERT INTO `video_road` VALUES (2037, 'load_4', 2671);
 INSERT INTO `video_road` VALUES (2038, 'load_3', 2671);
 INSERT INTO `video_road` VALUES (2040, 'load_1', 2673);
+INSERT INTO `video_road` VALUES (2044, 'load_1', 2682);
+INSERT INTO `video_road` VALUES (2045, 'load_5', 2685);
+INSERT INTO `video_road` VALUES (2046, 'load_5', 2688);
+INSERT INTO `video_road` VALUES (2047, 'load_1', 2688);
+INSERT INTO `video_road` VALUES (2048, 'load_7', 2689);
+INSERT INTO `video_road` VALUES (2049, 'load_6', 2689);
+INSERT INTO `video_road` VALUES (2050, 'load_5', 2690);
+INSERT INTO `video_road` VALUES (2051, 'load_4', 2690);
+INSERT INTO `video_road` VALUES (2052, 'load_2', 2691);
+INSERT INTO `video_road` VALUES (2053, 'load_6', 2692);
+INSERT INTO `video_road` VALUES (2054, 'load_5', 2693);
+INSERT INTO `video_road` VALUES (2055, 'load_6', 2693);
+INSERT INTO `video_road` VALUES (2056, 'load_9', 2695);
+INSERT INTO `video_road` VALUES (2057, 'load_8', 2695);
+INSERT INTO `video_road` VALUES (2058, 'load_2', 2697);
+INSERT INTO `video_road` VALUES (2063, 'load_3', 2706);
+INSERT INTO `video_road` VALUES (2064, 'load_1', 2708);
+INSERT INTO `video_road` VALUES (2085, 'load_4', 2740);
+INSERT INTO `video_road` VALUES (2120, 'load_1', 2792);
+INSERT INTO `video_road` VALUES (2130, 'load_1', 2810);
+INSERT INTO `video_road` VALUES (2133, 'load_3', 2813);
+INSERT INTO `video_road` VALUES (2154, 'load_2', 2843);
+INSERT INTO `video_road` VALUES (2160, 'load_4', 2854);
+INSERT INTO `video_road` VALUES (2197, 'load_3', 2901);
+INSERT INTO `video_road` VALUES (2229, 'load_9', 2954);
+INSERT INTO `video_road` VALUES (2231, 'load_1', 2959);
+INSERT INTO `video_road` VALUES (2237, 'load_4', 2965);
+INSERT INTO `video_road` VALUES (2238, 'load_3', 2965);
+INSERT INTO `video_road` VALUES (2244, 'load_2', 2973);
+INSERT INTO `video_road` VALUES (2245, 'load_1', 2973);
+INSERT INTO `video_road` VALUES (2250, 'load_4', 2980);
+INSERT INTO `video_road` VALUES (2251, 'load_3', 2980);
+INSERT INTO `video_road` VALUES (2279, 'load_7', 3020);
+INSERT INTO `video_road` VALUES (2280, 'load_6', 3020);
+INSERT INTO `video_road` VALUES (2298, 'load_4', 3046);
+INSERT INTO `video_road` VALUES (2314, 'load_5', 3064);
+INSERT INTO `video_road` VALUES (2352, 'load_5', 3117);
+INSERT INTO `video_road` VALUES (2369, 'load_5', 3150);
+INSERT INTO `video_road` VALUES (2385, 'load_4', 3172);
+INSERT INTO `video_road` VALUES (2386, 'load_5', 3172);
+INSERT INTO `video_road` VALUES (2395, 'load_3', 3184);
+INSERT INTO `video_road` VALUES (2399, 'load_6', 3191);
+INSERT INTO `video_road` VALUES (2747, 'load_1', 1);
+INSERT INTO `video_road` VALUES (2748, 'load_3', 2);
+INSERT INTO `video_road` VALUES (2749, 'load_2', 2);
+INSERT INTO `video_road` VALUES (2750, 'load_0', 2);
+INSERT INTO `video_road` VALUES (2751, 'load_1', 2);
+INSERT INTO `video_road` VALUES (2752, 'load_2', 3);
+INSERT INTO `video_road` VALUES (2753, 'load_0', 3);
+INSERT INTO `video_road` VALUES (2754, 'load_0', 3668);
+INSERT INTO `video_road` VALUES (2755, 'load_0', 3669);
+INSERT INTO `video_road` VALUES (2756, 'load_0', 3670);
+INSERT INTO `video_road` VALUES (2757, 'load_0', 3671);
+INSERT INTO `video_road` VALUES (2758, 'load_0', 3672);
+INSERT INTO `video_road` VALUES (2759, 'load_3', 11);
+INSERT INTO `video_road` VALUES (2760, 'load_1', 11);
+INSERT INTO `video_road` VALUES (2761, 'load_0', 3675);
+INSERT INTO `video_road` VALUES (2762, 'load_0', 3677);
+INSERT INTO `video_road` VALUES (2763, 'load_0', 3678);
+INSERT INTO `video_road` VALUES (2764, 'load_1', 19);
+INSERT INTO `video_road` VALUES (2765, 'load_0', 3682);
+INSERT INTO `video_road` VALUES (2766, 'load_0', 3683);
+INSERT INTO `video_road` VALUES (2767, 'load_0', 3684);
+INSERT INTO `video_road` VALUES (2768, 'load_3', 24);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 22/03/2023 21:53:37
+ Date: 24/03/2023 18:03:42
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `video_tag`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_video_id_2`(`video_id` ASC) USING BTREE,
   CONSTRAINT `fk_video_id_2` FOREIGN KEY (`video_id`) REFERENCES `video` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 2582 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3582 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of video_tag
@@ -721,5 +721,55 @@ INSERT INTO `video_tag` VALUES (2568, '爱情,剧情', 2665);
 INSERT INTO `video_tag` VALUES (2570, '战斗,科幻,奇幻', 2667);
 INSERT INTO `video_tag` VALUES (2573, '恋爱', 2670);
 INSERT INTO `video_tag` VALUES (2574, '爱情,喜剧,剧情', 2671);
+INSERT INTO `video_tag` VALUES (2585, '真人秀', 2682);
+INSERT INTO `video_tag` VALUES (2588, '悬疑,罪案,剧情', 2685);
+INSERT INTO `video_tag` VALUES (2591, '剧情', 2688);
+INSERT INTO `video_tag` VALUES (2592, '剧情', 2689);
+INSERT INTO `video_tag` VALUES (2593, '剧情', 2690);
+INSERT INTO `video_tag` VALUES (2594, '搞笑,奇幻,冒险', 2691);
+INSERT INTO `video_tag` VALUES (2595, '悬疑,剧情', 2692);
+INSERT INTO `video_tag` VALUES (2596, '悬疑,罪案,剧情', 2693);
+INSERT INTO `video_tag` VALUES (2598, '喜剧,剧情', 2695);
+INSERT INTO `video_tag` VALUES (2600, '喜剧', 2697);
+INSERT INTO `video_tag` VALUES (2609, '百合', 2706);
+INSERT INTO `video_tag` VALUES (2611, '罪案', 2708);
+INSERT INTO `video_tag` VALUES (2693, '搞笑,音乐', 2792);
+INSERT INTO `video_tag` VALUES (2714, '悬疑,罪案,剧情', 2813);
+INSERT INTO `video_tag` VALUES (2744, '搞笑,奇幻', 2843);
+INSERT INTO `video_tag` VALUES (2755, '搞笑,青春,校园,百合', 2854);
+INSERT INTO `video_tag` VALUES (2802, '家庭,剧情', 2901);
+INSERT INTO `video_tag` VALUES (2854, '喜剧,罪案,剧情', 2954);
+INSERT INTO `video_tag` VALUES (2859, '都市,剧情', 2959);
+INSERT INTO `video_tag` VALUES (2865, '悬疑,罪案', 2965);
+INSERT INTO `video_tag` VALUES (2873, '爱情,剧情', 2973);
+INSERT INTO `video_tag` VALUES (2880, '古装,武侠,爱情', 2980);
+INSERT INTO `video_tag` VALUES (2920, '科幻,剧情', 3020);
+INSERT INTO `video_tag` VALUES (2946, '偶像,青春,剧情', 3046);
+INSERT INTO `video_tag` VALUES (2964, '悬疑,罪案,剧情', 3064);
+INSERT INTO `video_tag` VALUES (3016, '喜剧,剧情', 3117);
+INSERT INTO `video_tag` VALUES (3049, '罪案,剧情,奇幻', 3150);
+INSERT INTO `video_tag` VALUES (3071, '爱情', 3172);
+INSERT INTO `video_tag` VALUES (3083, '悬疑,罪案,剧情', 3184);
+INSERT INTO `video_tag` VALUES (3090, '偶像,爱情,剧情', 3191);
+INSERT INTO `video_tag` VALUES (3562, '搞笑,冒险,亲子', 2);
+INSERT INTO `video_tag` VALUES (3563, 'Unknown', 3);
+INSERT INTO `video_tag` VALUES (3564, '动画', 3666);
+INSERT INTO `video_tag` VALUES (3565, '动作,动画,奇幻', 3667);
+INSERT INTO `video_tag` VALUES (3566, '战斗,科幻,冒险', 3668);
+INSERT INTO `video_tag` VALUES (3567, 'Unknown', 3669);
+INSERT INTO `video_tag` VALUES (3568, '搞笑,亲子', 3670);
+INSERT INTO `video_tag` VALUES (3569, '奇幻,校园,百合,运动,魔法', 3671);
+INSERT INTO `video_tag` VALUES (3570, '动作,动画,奇幻', 3672);
+INSERT INTO `video_tag` VALUES (3571, '科幻', 3674);
+INSERT INTO `video_tag` VALUES (3572, 'Unknown', 3675);
+INSERT INTO `video_tag` VALUES (3573, '动画', 3676);
+INSERT INTO `video_tag` VALUES (3574, '搞笑,亲子', 3677);
+INSERT INTO `video_tag` VALUES (3575, '搞笑,亲子', 3678);
+INSERT INTO `video_tag` VALUES (3576, '奇幻,冒险,治愈', 3679);
+INSERT INTO `video_tag` VALUES (3577, '搞笑,治愈,冒险', 3680);
+INSERT INTO `video_tag` VALUES (3578, '搞笑,奇幻,亲子,冒险', 3682);
+INSERT INTO `video_tag` VALUES (3579, 'Unknown', 3683);
+INSERT INTO `video_tag` VALUES (3580, '搞笑', 3684);
+INSERT INTO `video_tag` VALUES (3581, '动作,动画,奇幻,剧情', 3685);
 
 SET FOREIGN_KEY_CHECKS = 1;
