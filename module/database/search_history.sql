@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 22/03/2023 21:54:16
+ Date: 24/03/2023 18:02:59
 */
 
 SET NAMES utf8mb4;
@@ -28,16 +28,14 @@ CREATE TABLE `search_history`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_user_id_search_history`(`user_id` ASC) USING BTREE,
   CONSTRAINT `fk_user_id_search_history` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of search_history
 -- ----------------------------
-INSERT INTO `search_history` VALUES (1, '魔女', 1);
-INSERT INTO `search_history` VALUES (2, '美女', 3);
-INSERT INTO `search_history` VALUES (3, '机甲', 3);
-INSERT INTO `search_history` VALUES (4, '加速世界', 3);
-INSERT INTO `search_history` VALUES (5, '画江湖之不良人', 2);
-INSERT INTO `search_history` VALUES (6, '魔法', 2);
+INSERT INTO `search_history` VALUES (1, '熊猫', 1);
+INSERT INTO `search_history` VALUES (2, '魔女', 2);
+INSERT INTO `search_history` VALUES (3, '魔女', 1);
+INSERT INTO `search_history` VALUES (4, '米', 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

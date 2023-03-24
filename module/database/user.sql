@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 20/03/2023 18:54:59
+ Date: 24/03/2023 18:03:12
 */
 
 SET NAMES utf8mb4;
@@ -24,16 +24,18 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `gender` enum('男','女') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `password` int NULL DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `isDelete` bit(1) NULL DEFAULT (0),
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES (1, 'liaojie1314', '男', 123456, b'0');
-INSERT INTO `user` VALUES (2, 'liaojie1315', '女', 654321, b'0');
+INSERT INTO `user` VALUES (1, '叶兰', '$2a$10$UqGJNqud/Z12MaidUr.n6eS1dC.FWi9EV1b1gPFUOvIJ83i.dAcpm', b'0');
+INSERT INTO `user` VALUES (2, '张飞', '$2a$10$Olr6Tf8HBRw8jfL2B.JPQeRbO7HqcegeI0QlX2yJ4dTLmkyPV.WjO', b'0');
+INSERT INTO `user` VALUES (3, '廖忠', '$2a$10$suDSSf9Xrc7Lx0dY8X4TD.bxEjykuziVcu8pZhctoSmZSOp4XLn0G', b'0');
+INSERT INTO `user` VALUES (4, '李淳罡', '$2a$10$/8Z8aGeUudyH8Fk9zABx5OkeqpF.n3pYySxwYyyQcuvQG3bLAge1S', b'0');
+INSERT INTO `user` VALUES (5, 'liaojie', '$2a$10$nvxB7x14naFXBKpZEOywUOPM6F/nRZ3V.zH2E0xEoRstzcAIzpFSe', b'0');
 
 SET FOREIGN_KEY_CHECKS = 1;
