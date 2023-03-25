@@ -9,65 +9,6 @@ require("dotenv").config();
 router.get('/login', (req, res) => {
   res.json({message: '登录界面'});
 });
-// router.post('/login', (req, res) => {
-//   // 获取参数
-//   const { username, password, token } = req.body;
-
-//   // 如果有token，则尝试解密
-//   if (token) {
-//     try {
-//       const decoded = Token.decode(token);
-//       if (decoded.username === username) {
-//         // 如果解密成功，且用户名与请求一致，则返回登录成功,并找到user_id返回给前端
-//         db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
-//           if (err) {
-//             console.error(err);
-//             res.status(500).send('login Server Error');
-//             return;
-//           }
-//           res.json({ code: 0, message: '登录成功', user_id:user_id[0].id, token: token });
-//           return;
-//         })
-//       }
-//     } catch (err) {
-//       res.send("解密失败")
-//       // 如果解密失败，或用户名不一致，则忽略token，进行下一步验证
-//     }
-//   }
-//   if(password) {
-//   // 验证用户名和密码
-//   db.model('user').sql(`SELECT COUNT(*) as count FROM user WHERE name='${username}' AND password=${password}`, (err, results) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).send('Internal Server Error');
-//       return;
-//     }
-//     if (results[0].count > 0) {
-//       db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, user_id) => {
-//         if (err) {
-//           console.error(err);
-//           res.status(500).send('login Server Error');
-//           return;
-//         }
-//         // 生成新的token返回给客户端
-//         const payload = { username };
-//         const newToken = Token.encode(payload);
-//         res.json({ code: 0, message: '登录成功', user_id:user_id[0].id, token: newToken });
-//       })
-//     } else {
-//       res.json({ code: -1, message: '用户名或密码错误' });
-//     }
-//   });
-//   }
-//   else{
-//     res.json({ code: -1, message: '没输入密码' });
-//   }
-// });
-
-
-//注册
-
-
 router.post('/login', async (req, res) => {
   // 获取参数
   const { username, password, token } = req.body;
@@ -119,31 +60,10 @@ router.post('/login', async (req, res) => {
   });
 });
 
-
-
-
-
+//注册
 router.get('/signin', (req, res) => {
   res.json({message: '注册界面'});
 });
-// router.post('/signin', (req, res) => {
-//   //获取参数
-//   const { username, password} = req.body;
-//   //加密密码
-//   const payload = { username };
-//   const token = Token.encode(payload);
-//   db.model('user').sql(`INSERT INTO user (name, password) VALUES ('${username}', '${password}')`, (err, results) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).send('Internal Server Error');
-//       return;
-//     }
-//     res.json({ code: 0, message: '注册成功', token: token });
-//   });
-// });
-
-//测试数据库连接
-
 router.post('/signin', async (req, res) => {
   //获取参数
   const { username, password} = req.body;
@@ -162,8 +82,7 @@ router.post('/signin', async (req, res) => {
   });
 });
 
-
-
+//测试数据库连接
 router.get('/test', (req, res) => {
   db.model('user').sql(`select count(*) as count from user`, (err, results) => {
     if (err) {
@@ -198,16 +117,29 @@ router.post('/search', (req, res) => {
       res.json({ code: 0, message: 'user_id = 0', data:search_results });
       return;
     }
-    const insertQuery = `insert into search_history (content,user_id) VALUES ('${msg}', '${user_id}');`;
-    db.model('search_history').sql(insertQuery,(err,insert_results)=>{
+    const searchQuery2 = `SELECT count(*) from search_history where content = '${msg}' and user_id='${user_id}'`;
+    db.model('search_history').sql(searchQuery2,(err,search_results2)=>{
       if (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
         return;
       }
-      res.status(200);
-      res.json({ code: 0, message: '搜索成功',data:search_data });
-    })
+      if(search_results2[0]){
+          res.status(200).json({ code: 0, message: '搜索成功',data:search_data });
+          return;
+      }else{
+        const insertQuery = `insert into search_history (content,user_id) VALUES ('${msg}', '${user_id}')`;
+        db.model('search_history').sql(insertQuery,(err,insert_results)=>{
+          if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
+          res.status(200);
+          res.json({ code: 0, message: '搜索成功',data:search_data });
+        })
+      }
+    });
   });
 });
 
@@ -344,7 +276,7 @@ router.get('/rank',(req,res)=>{
 
 //轮播表
 router.get('/rotate', (req, res) => {
-  const sqlquery = `select video.id,video.name,video.cover,video.episodes from video_round,video,video_tag where video.id = video_tag.video_id and video_round.video_id = video.id`
+  const sqlquery = `SELECT video.id,video.name,video.cover,video.episodes FROM video,video_tag,video_round WHERE video_round.video_id = video.id and video.id = video_tag.video_id`
   db.model('user').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
@@ -359,32 +291,6 @@ router.get('/rotate', (req, res) => {
     }
   });
 });
-
-//返回video_url
-// router.post('/get_video_url', (req, res) => {
-//   const video_id = req.body.video_id;
-//   const sqlquery = `SELECT video_episodes.episodes, video_road.name as road, video_episodes.url FROM video, video_episodes, video_road WHERE video_episodes.road_id = video_road.id AND video_road.video_id = video.id AND video.id = '${video_id}' ORDER BY video_road.name, video_episodes.episodes`
-//   db.model('user').sql(sqlquery, (err, results) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).json({ message: 'Failed to execute SQL query' });
-//     } else {
-//       const data = results.reduce((acc, result) => {
-//         let videoData = acc.find((data) => data.road === result.road);
-//         if (!videoData) {
-//           videoData = { road: result.road, episodes: [] };
-//           acc.push(videoData);
-//         }
-//         videoData.episodes.push({
-//           episode: result.episodes,
-//           url: result.url,
-//         });
-//         return acc;
-//       }, []);
-//       res.status(200).json({ code: 0, message: 'get_video_url', data });
-//     }
-//   });
-// });
 
 //返回指定video_id信息
 router.post('/getVideoInfo', (req, res) => {
@@ -413,20 +319,143 @@ router.post('/getVideoInfo', (req, res) => {
   });
 });
 
+//获取搜索记录
 router.post('/getHistory',(req,res)=>{
   const user_id = req.body.user_id;
   if (user_id === 0){
-    res.status(200).json({code:0,message:"user_id = 0", data:[]});
+    res.status(200).json({code:0,message:"user_id = 0", value:[]});
     return;
   }
   const sqlquery = `select search_history.content from search_history where user_id = '${user_id}'`;
   db.model('user').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
-      res.status(500).json({cosw:-1, message: 'Failed to execute SQL query' });
+      res.status(500).json({code:-1, message: 'Failed to execute SQL query' });
     } else {
-      res.status(200).json({code:0,message:"getHistory", data:results});
+      res.status(200).json({code:0,message:"getHistory", value:results});
     };
   });
 });
+
+//发表评论
+router.post('/makeComment',(req,res)=>{
+  const {videoid,content,userid} = req.body;
+  const sqlquery = `insert into comment (video_id,content,user_id,createTime,commitLikeCount) VALUES('${videoid}','${content}','${userid}',NOW(),FLOOR(RAND() * 100))`;
+  db.model('comment').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({cosw:-1, message: 'Failed to execute SQL query' });
+    } else {
+      res.status(200).json({code:0,message:"评论成功"});
+    };
+  });
+});
+
+//返回一级评论
+router.post('/getComment1', (req, res) => {
+  const videoid = req.body.videoid;
+  const pagenum = req.body.pagenum || 1; // 如果未提供 pagenum 参数，默认为第一页
+  const pagesize = req.body.pagesize || 10; // 如果未提供 pagesize 参数，默认每页显示 10 条评论
+  const state = req.body.state || "createtime";
+  const offset = (pagenum - 1) * pagesize; // 计算需要跳过的评论数量
+
+  // 查询符合条件的评论总数
+  const sqlquery1 = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${videoid}'`;
+  db.model('comment').sql(sqlquery1, (err, results1) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
+      return;
+    }
+
+    // 查询符合条件的评论详细信息，并按照 createTime 降序或者 commitLikeCount 降序排序
+    let orderBy = '';
+    if (state === 'hot') {
+      orderBy = 'ORDER BY commitLikeCount ASC, createTime ASC';
+    } else if (state === 'time') {
+      orderBy = 'ORDER BY createTime ASC';
+    }
+    const sqlquery2 = `
+      SELECT comment.videoCommentID AS id, user.name AS nickname, content, createTime, commitLikeCount 
+      FROM user, comment 
+      WHERE video_id = '${videoid}' AND user.id = comment.user_id 
+      ${orderBy} 
+      LIMIT ${offset}, ${pagesize}
+    `;
+    db.model('comment').sql(sqlquery2, (err, results2) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
+        return;
+      }
+
+      const total = results1[0].total; // 总评论数
+      const rows = results2; // 当前页评论数据
+
+      res.status(200).json({ code: 0, message: '查询成功', total, rows });
+    });
+  });
+});
+
+
+//返回二级评论
+router.post('/getComment2', (req, res) => {
+  const videoCommentid = req.body.videoCommentid;
+  const pagenum = req.body.pagenum || 1; // 如果未提供 pagenum 参数，默认为第一页
+  const pagesize = req.body.pagesize || 10; // 如果未提供 pagesize 参数，默认每页显示 10 条评论
+  const state = req.body.state || "createtime";
+  const offset = (pagenum - 1) * pagesize; // 计算需要跳过的评论数量
+
+  // 查询符合条件的评论总数
+  const sqlquery1 = `SELECT COUNT(*) AS total FROM comment WHERE comment.rootCommentID = '${videoCommentid}'`;
+  db.model('comment').sql(sqlquery1, (err, results1) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
+      return;
+    }
+
+    // 查询符合条件的评论详细信息，并按照 createTime 降序或者 commitLikeCount 降序排序
+    let orderBy = '';
+    if (state === 'hot') {
+      orderBy = 'ORDER BY commitLikeCount ASC, createTime ASC';
+    } else if (state === 'time') {
+      orderBy = 'ORDER BY createTime ASC';
+    }
+    const sqlquery2 = `
+      SELECT comment.videoCommentID AS id, user.name AS nickname, content, createTime, commitLikeCount 
+      FROM user, comment 
+      WHERE rootCommentID = '${videoCommentid}' AND user.id = comment.user_id 
+      ${orderBy} 
+      LIMIT ${offset}, ${pagesize}
+    `;
+    db.model('comment').sql(sqlquery2, (err, results2) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
+        return;
+      }
+
+      const total = results1[0].total; // 总评论数
+      const rows = results2; // 当前页评论数据
+
+      res.status(200).json({ code: 0, message: '查询成功', total, rows });
+    });
+  });
+});
+
+//获取url
+router.post('/getUrl',(req,res)=>{
+  const videoid = req.body.videoid
+  const sqlquery = `SELECT video_episodes.episodes, MIN(video_episodes.url) AS url FROM video_episodes INNER JOIN video_road ON video_road.id = video_episodes.road_id INNER JOIN video ON video.id = video_road.video_id WHERE video.id = '${videoid}' GROUP BY video_episodes.episodes ORDER BY episodes;`
+  db.model('video_episodes').sql(sqlquery, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({cosw:-1, message: 'Failed to execute SQL query' });
+    } else {
+      res.status(200).json({code:0,message:"评论成功",data:results});
+    };
+  });
+})
+
 module.exports = router;
