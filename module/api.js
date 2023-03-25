@@ -339,8 +339,8 @@ router.post('/getHistory',(req,res)=>{
 
 //发表评论
 router.post('/makeComment',(req,res)=>{
-  const {videoid,content,userid} = req.body;
-  const sqlquery = `insert into comment (video_id,content,user_id,createTime,commitLikeCount) VALUES('${videoid}','${content}','${userid}',NOW(),FLOOR(RAND() * 100))`;
+  const {video_id,content,user_id} = req.body;
+  const sqlquery = `insert into comment (video_id,content,user_id,createTime,commitLikeCount) VALUES('${video_id}','${content}','${user_id}',NOW(),FLOOR(RAND() * 100))`;
   db.model('comment').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
@@ -353,14 +353,14 @@ router.post('/makeComment',(req,res)=>{
 
 //返回一级评论
 router.post('/getComment1', (req, res) => {
-  const videoid = req.body.videoid;
+  const video_id = req.body.video_id;
   const pagenum = req.body.pagenum || 1; // 如果未提供 pagenum 参数，默认为第一页
   const pagesize = req.body.pagesize || 10; // 如果未提供 pagesize 参数，默认每页显示 10 条评论
   const state = req.body.state || "createtime";
   const offset = (pagenum - 1) * pagesize; // 计算需要跳过的评论数量
 
   // 查询符合条件的评论总数
-  const sqlquery1 = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${videoid}'`;
+  const sqlquery1 = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}'`;
   db.model('comment').sql(sqlquery1, (err, results1) => {
     if (err) {
       console.error(err);
@@ -378,7 +378,7 @@ router.post('/getComment1', (req, res) => {
     const sqlquery2 = `
       SELECT comment.videoCommentID AS id, user.name AS nickname, content, createTime, commitLikeCount 
       FROM user, comment 
-      WHERE video_id = '${videoid}' AND user.id = comment.user_id 
+      WHERE video_id = '${video_id}' AND user.id = comment.user_id 
       ${orderBy} 
       LIMIT ${offset}, ${pagesize}
     `;
@@ -446,14 +446,14 @@ router.post('/getComment2', (req, res) => {
 
 //获取url
 router.post('/getUrl',(req,res)=>{
-  const videoid = req.body.videoid
-  const sqlquery = `SELECT video_episodes.episodes, MIN(video_episodes.url) AS url FROM video_episodes INNER JOIN video_road ON video_road.id = video_episodes.road_id INNER JOIN video ON video.id = video_road.video_id WHERE video.id = '${videoid}' GROUP BY video_episodes.episodes ORDER BY episodes;`
+  const video_id = req.body.video_id
+  const sqlquery = `SELECT video_episodes.episodes, MIN(video_episodes.url) AS url FROM video_episodes INNER JOIN video_road ON video_road.id = video_episodes.road_id INNER JOIN video ON video.id = video_road.video_id WHERE video.id = '${video_id}' GROUP BY video_episodes.episodes ORDER BY episodes;`
   db.model('video_episodes').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({cosw:-1, message: 'Failed to execute SQL query' });
     } else {
-      res.status(200).json({code:0,message:"评论成功",data:results});
+      res.status(200).json({code:0, message:"GETURL", data:results});
     };
   });
 })
