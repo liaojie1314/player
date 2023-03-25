@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 24/03/2023 18:03:12
+ Date: 25/03/2023 21:21:40
 */
 
 SET NAMES utf8mb4;
@@ -27,7 +27,7 @@ CREATE TABLE `user`  (
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `isDelete` bit(1) NULL DEFAULT (0),
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of user
@@ -37,5 +37,6 @@ INSERT INTO `user` VALUES (2, '张飞', '$2a$10$Olr6Tf8HBRw8jfL2B.JPQeRbO7Hqcege
 INSERT INTO `user` VALUES (3, '廖忠', '$2a$10$suDSSf9Xrc7Lx0dY8X4TD.bxEjykuziVcu8pZhctoSmZSOp4XLn0G', b'0');
 INSERT INTO `user` VALUES (4, '李淳罡', '$2a$10$/8Z8aGeUudyH8Fk9zABx5OkeqpF.n3pYySxwYyyQcuvQG3bLAge1S', b'0');
 INSERT INTO `user` VALUES (5, 'liaojie', '$2a$10$nvxB7x14naFXBKpZEOywUOPM6F/nRZ3V.zH2E0xEoRstzcAIzpFSe', b'0');
+INSERT INTO `user` VALUES (6, '巴啦啦', '$2a$10$ZbErJpYlhr8U1TKJwGqKveoqqBCg8.RvgVmLhjO6x/JLoaJD68//C', b'0');
 
 SET FOREIGN_KEY_CHECKS = 1;
