@@ -362,12 +362,12 @@ router.post('/getComment1', (req, res) => {
   const pagesize = req.body.pagesize || 10; // 如果未提供 pagesize 参数，默认每页显示 10 条评论
   const offset = (pagenum - 1) * pagesize; // 计算需要跳过的评论数量
   //获取评论总数
-  const queryTotal = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}'`;
+  const queryTotal = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}' AND comment.rootCommentID = 0`;
   // 按照 createTime 降序排序查询符合条件的评论详细信息
   const queryByTime = `
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
     FROM user, comment 
-    WHERE video_id = '${video_id}' AND user.id = comment.user_id 
+    WHERE video_id = '${video_id}' AND user.id = comment.user_id AND comment.rootCommentID = 0
     ORDER BY createTime ASC 
     LIMIT ${offset}, ${pagesize}
   `;
@@ -376,7 +376,7 @@ router.post('/getComment1', (req, res) => {
   const queryByHot = `
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
     FROM user, comment 
-    WHERE video_id = '${video_id}' AND user.id = comment.user_id 
+    WHERE video_id = '${video_id}' AND user.id = comment.user_id AND comment.rootCommentID = 0
     ORDER BY commitLikeCount DESC, createTime ASC 
     LIMIT ${offset}, ${pagesize}
   `;
