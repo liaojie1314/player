@@ -356,47 +356,49 @@ router.post('/getComment1', (req, res) => {
   const video_id = req.body.video_id;
   const pagenum = req.body.pagenum || 1; // 如果未提供 pagenum 参数，默认为第一页
   const pagesize = req.body.pagesize || 10; // 如果未提供 pagesize 参数，默认每页显示 10 条评论
-  const state = req.body.state || "createtime";
   const offset = (pagenum - 1) * pagesize; // 计算需要跳过的评论数量
-
-  // 查询符合条件的评论总数
-  const sqlquery1 = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}'`;
-  db.model('comment').sql(sqlquery1, (err, results1) => {
+  //获取评论总数
+  const queryTotal = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}'`;
+  // 按照 createTime 降序排序查询符合条件的评论详细信息
+  const queryByTime = `
+    SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
+    FROM user, comment 
+    WHERE video_id = '${video_id}' AND user.id = comment.user_id 
+    ORDER BY createTime ASC 
+    LIMIT ${offset}, ${pagesize}
+  `;
+  
+  // 按照 commitLikeCount 降序排序查询符合条件的评论详细信息
+  const queryByHot = `
+    SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
+    FROM user, comment 
+    WHERE video_id = '${video_id}' AND user.id = comment.user_id 
+    ORDER BY commitLikeCount DESC, createTime ASC 
+    LIMIT ${offset}, ${pagesize}
+  `;
+  db.model('comment').sql(queryByTime, (err, rowsByTime) => {
     if (err) {
       console.error(err);
       res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
       return;
     }
-
-    // 查询符合条件的评论详细信息，并按照 createTime 降序或者 commitLikeCount 降序排序
-    let orderBy = '';
-    if (state === 'hot') {
-      orderBy = 'ORDER BY commitLikeCount ASC, createTime ASC';
-    } else if (state === 'time') {
-      orderBy = 'ORDER BY createTime ASC';
-    }
-    const sqlquery2 = `
-      SELECT comment.videoCommentID AS id, user.name AS nickname, content, createTime, commitLikeCount 
-      FROM user, comment 
-      WHERE video_id = '${video_id}' AND user.id = comment.user_id 
-      ${orderBy} 
-      LIMIT ${offset}, ${pagesize}
-    `;
-    db.model('comment').sql(sqlquery2, (err, results2) => {
+    db.model('comment').sql(queryByHot, (err, rowsByHot) => {
       if (err) {
         console.error(err);
         res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
         return;
       }
-
-      const total = results1[0].total; // 总评论数
-      const rows = results2; // 当前页评论数据
-
-      res.status(200).json({ code: 0, message: '查询成功', total, rows });
+      db.model('comment').sql(queryTotal, (err, total) => {
+        if (err) {
+          console.error(err);
+          res.status(500).json({ code: -1, message: 'Failed to execute SQL query' });
+          return;
+        }
+        res.status(200).json({ code: 0, message: '查询成功', total:total[0].total, rowsByTime, rowsByHot });
+      });
     });
   });
 });
-
 
 //返回二级评论
 router.post('/getComment2', (req, res) => {
@@ -423,7 +425,7 @@ router.post('/getComment2', (req, res) => {
       orderBy = 'ORDER BY createTime ASC';
     }
     const sqlquery2 = `
-      SELECT comment.videoCommentID AS id, user.name AS nickname, content, createTime, commitLikeCount 
+      SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
       FROM user, comment 
       WHERE rootCommentID = '${videoCommentid}' AND user.id = comment.user_id 
       ${orderBy} 

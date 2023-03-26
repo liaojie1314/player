@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 25/03/2023 21:22:14
+ Date: 26/03/2023 13:47:29
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `video_tag`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_video_id_2`(`video_id` ASC) USING BTREE,
   CONSTRAINT `fk_video_id_2` FOREIGN KEY (`video_id`) REFERENCES `video` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 3228 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3253 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of video_tag
@@ -842,107 +842,30 @@ INSERT INTO `video_tag` VALUES (3098, '剧情', 3200);
 INSERT INTO `video_tag` VALUES (3101, '剧情', 3203);
 INSERT INTO `video_tag` VALUES (3102, '爱情,历史,剧情', 3204);
 INSERT INTO `video_tag` VALUES (3103, '家庭,罪案,剧情', 3205);
-INSERT INTO `video_tag` VALUES (3126, '剧情,魔幻,喜剧,爱情,家庭', 3287);
-INSERT INTO `video_tag` VALUES (3127, '搞笑,恋爱', 3288);
-INSERT INTO `video_tag` VALUES (3128, '喜剧,爱情', 3289);
-INSERT INTO `video_tag` VALUES (3129, '恐怖', 3290);
-INSERT INTO `video_tag` VALUES (3130, '动画,奇幻,爱情', 3291);
-INSERT INTO `video_tag` VALUES (3131, '喜剧,动作,动画', 3292);
-INSERT INTO `video_tag` VALUES (3132, '动作,魔幻,奇幻,科幻', 3293);
-INSERT INTO `video_tag` VALUES (3133, '惊悚,动作', 3294);
-INSERT INTO `video_tag` VALUES (3134, '动作,爱情', 3295);
-INSERT INTO `video_tag` VALUES (3135, '惊悚,恐怖', 3296);
-INSERT INTO `video_tag` VALUES (3136, '奇幻,喜剧,家庭', 3297);
-INSERT INTO `video_tag` VALUES (3137, '动作,恐怖,惊悚,犯罪,科幻', 3298);
-INSERT INTO `video_tag` VALUES (3138, '动作,恐怖', 3299);
-INSERT INTO `video_tag` VALUES (3139, '犯罪,悬疑,动作', 3300);
-INSERT INTO `video_tag` VALUES (3140, '惊悚,恐怖,喜剧', 3301);
-INSERT INTO `video_tag` VALUES (3141, '惊悚,恐怖,剧情', 3302);
-INSERT INTO `video_tag` VALUES (3142, '魔幻,动作,喜剧', 3303);
-INSERT INTO `video_tag` VALUES (3143, '惊悚,恐怖,科幻', 3304);
-INSERT INTO `video_tag` VALUES (3144, '惊悚,恐怖', 3305);
-INSERT INTO `video_tag` VALUES (3145, '悬疑,恐怖', 3306);
-INSERT INTO `video_tag` VALUES (3146, '恐怖,悬疑', 3307);
-INSERT INTO `video_tag` VALUES (3147, '剧情,奇幻,家庭', 3308);
-INSERT INTO `video_tag` VALUES (3148, '惊悚,悬疑,恐怖,剧情', 3309);
-INSERT INTO `video_tag` VALUES (3149, '剧情', 3310);
-INSERT INTO `video_tag` VALUES (3150, '惊悚,犯罪,动作,恐怖', 3311);
-INSERT INTO `video_tag` VALUES (3151, '剧情,悬疑,爱情', 3312);
-INSERT INTO `video_tag` VALUES (3152, '动作,剧情,惊悚,悬疑', 3313);
-INSERT INTO `video_tag` VALUES (3153, '剧情,惊悚,犯罪', 3314);
-INSERT INTO `video_tag` VALUES (3154, '魔幻,奇幻,喜剧,家庭', 3315);
-INSERT INTO `video_tag` VALUES (3155, '恐怖', 3316);
-INSERT INTO `video_tag` VALUES (3156, '悲剧,恐怖,剧情,惊悚,悬疑,家庭', 3317);
-INSERT INTO `video_tag` VALUES (3157, '剧情,惊悚,犯罪,悬疑,恐怖', 3318);
-INSERT INTO `video_tag` VALUES (3158, '音乐,晚会,盛会', 3319);
-INSERT INTO `video_tag` VALUES (3159, '真人秀', 3320);
-INSERT INTO `video_tag` VALUES (3160, '音乐,真人秀', 3321);
-INSERT INTO `video_tag` VALUES (3161, 'Unknown', 3322);
-INSERT INTO `video_tag` VALUES (3162, '音乐,舞蹈,晚会,盛会', 3323);
-INSERT INTO `video_tag` VALUES (3163, 'Unknown', 3324);
-INSERT INTO `video_tag` VALUES (3164, '音乐,晚会,盛会', 3325);
-INSERT INTO `video_tag` VALUES (3165, 'Unknown', 3326);
-INSERT INTO `video_tag` VALUES (3166, '舞蹈,真人秀,歌舞', 3327);
-INSERT INTO `video_tag` VALUES (3167, '脱口秀', 3328);
-INSERT INTO `video_tag` VALUES (3168, 'Unknown', 3329);
-INSERT INTO `video_tag` VALUES (3169, 'Unknown', 3330);
-INSERT INTO `video_tag` VALUES (3170, 'Unknown', 3331);
-INSERT INTO `video_tag` VALUES (3171, 'Unknown', 3332);
-INSERT INTO `video_tag` VALUES (3172, '情感', 3333);
-INSERT INTO `video_tag` VALUES (3173, '旅游,真人秀', 3334);
-INSERT INTO `video_tag` VALUES (3174, '竞技', 3335);
-INSERT INTO `video_tag` VALUES (3175, '脱口秀', 3336);
-INSERT INTO `video_tag` VALUES (3176, 'Unknown', 3337);
-INSERT INTO `video_tag` VALUES (3177, 'Unknown', 3338);
-INSERT INTO `video_tag` VALUES (3178, 'Unknown', 3339);
-INSERT INTO `video_tag` VALUES (3179, '晚会,盛会', 3340);
-INSERT INTO `video_tag` VALUES (3180, '脱口秀', 3341);
-INSERT INTO `video_tag` VALUES (3181, '时尚,真人秀', 3342);
-INSERT INTO `video_tag` VALUES (3182, '晚会,情感', 3343);
-INSERT INTO `video_tag` VALUES (3183, '晚会', 3344);
-INSERT INTO `video_tag` VALUES (3184, '其它,访谈', 3345);
-INSERT INTO `video_tag` VALUES (3185, '舞蹈,选秀,歌舞', 3346);
-INSERT INTO `video_tag` VALUES (3186, '真人秀,竞技', 3347);
-INSERT INTO `video_tag` VALUES (3187, '访谈,生活,纪实', 3348);
-INSERT INTO `video_tag` VALUES (3188, 'Unknown', 3349);
-INSERT INTO `video_tag` VALUES (3189, 'Unknown', 3350);
-INSERT INTO `video_tag` VALUES (3190, '晚会,曲艺,盛会', 3351);
-INSERT INTO `video_tag` VALUES (3191, '真人秀', 3352);
-INSERT INTO `video_tag` VALUES (3192, '晚会', 3353);
-INSERT INTO `video_tag` VALUES (3193, '晚会,盛会', 3354);
-INSERT INTO `video_tag` VALUES (3194, '访谈,情感', 3355);
-INSERT INTO `video_tag` VALUES (3195, '亲子,生活,游戏,访谈,真人秀,情感,少儿', 3356);
-INSERT INTO `video_tag` VALUES (3196, 'Unknown', 3358);
-INSERT INTO `video_tag` VALUES (3197, '播报,纪实', 3359);
-INSERT INTO `video_tag` VALUES (3198, 'Unknown', 3360);
-INSERT INTO `video_tag` VALUES (3199, '音乐', 3361);
-INSERT INTO `video_tag` VALUES (3200, '音乐,少儿,真人秀', 3362);
-INSERT INTO `video_tag` VALUES (3201, '脱口秀', 3363);
-INSERT INTO `video_tag` VALUES (3202, '晚会,音乐', 3364);
-INSERT INTO `video_tag` VALUES (3203, '亲子,其它,少儿,时尚,真人秀,选秀', 3366);
-INSERT INTO `video_tag` VALUES (3204, '时尚', 3367);
-INSERT INTO `video_tag` VALUES (3205, '财经,访谈,脱口秀,纪实', 3368);
-INSERT INTO `video_tag` VALUES (3206, '访谈,脱口秀,纪实', 3369);
-INSERT INTO `video_tag` VALUES (3207, '脱口秀', 3370);
-INSERT INTO `video_tag` VALUES (3208, '音乐,舞蹈,纪实,亲子,生活,少儿,真人秀,晚会,盛会,选秀,歌舞', 3371);
-INSERT INTO `video_tag` VALUES (3209, '音乐', 3372);
-INSERT INTO `video_tag` VALUES (3210, '职场,其它,真人秀', 3373);
-INSERT INTO `video_tag` VALUES (3211, '访谈,脱口秀', 3374);
-INSERT INTO `video_tag` VALUES (3212, '晚会,盛会', 3375);
-INSERT INTO `video_tag` VALUES (3213, '职场,访谈', 3376);
-INSERT INTO `video_tag` VALUES (3214, '财经,真人秀,职场', 3377);
-INSERT INTO `video_tag` VALUES (3215, '访谈,脱口秀', 3378);
-INSERT INTO `video_tag` VALUES (3216, 'Unknown', 3379);
-INSERT INTO `video_tag` VALUES (3217, 'Unknown', 3380);
-INSERT INTO `video_tag` VALUES (3218, '真人秀,歌舞', 3381);
-INSERT INTO `video_tag` VALUES (3219, '脱口秀', 3382);
-INSERT INTO `video_tag` VALUES (3220, '财经,晚会,盛会', 3383);
-INSERT INTO `video_tag` VALUES (3221, '晚会', 3384);
-INSERT INTO `video_tag` VALUES (3222, '访谈,脱口秀', 3385);
-INSERT INTO `video_tag` VALUES (3223, '其它,真人秀,脱口秀,财经', 3386);
-INSERT INTO `video_tag` VALUES (3224, 'Unknown', 3387);
-INSERT INTO `video_tag` VALUES (3225, '时尚,真人秀', 3388);
-INSERT INTO `video_tag` VALUES (3226, '益智,真人秀,竞技', 3389);
-INSERT INTO `video_tag` VALUES (3227, '晚会,盛会', 3390);
+INSERT INTO `video_tag` VALUES (3228, '时尚,真人秀', 3507);
+INSERT INTO `video_tag` VALUES (3229, '益智,真人秀,竞技', 3508);
+INSERT INTO `video_tag` VALUES (3230, '晚会,盛会', 3509);
+INSERT INTO `video_tag` VALUES (3231, '职场,访谈', 3510);
+INSERT INTO `video_tag` VALUES (3232, '财经,真人秀,职场', 3511);
+INSERT INTO `video_tag` VALUES (3233, '访谈,脱口秀', 3512);
+INSERT INTO `video_tag` VALUES (3234, 'Unknown', 3513);
+INSERT INTO `video_tag` VALUES (3235, 'Unknown', 3514);
+INSERT INTO `video_tag` VALUES (3236, '真人秀,歌舞', 3515);
+INSERT INTO `video_tag` VALUES (3237, '脱口秀', 3516);
+INSERT INTO `video_tag` VALUES (3238, '财经,晚会,盛会', 3517);
+INSERT INTO `video_tag` VALUES (3239, '晚会', 3518);
+INSERT INTO `video_tag` VALUES (3240, '访谈,脱口秀', 3519);
+INSERT INTO `video_tag` VALUES (3241, '其它,真人秀,脱口秀,财经', 3520);
+INSERT INTO `video_tag` VALUES (3242, 'Unknown', 3521);
+INSERT INTO `video_tag` VALUES (3243, '剧情,魔幻,喜剧,爱情,家庭', 3525);
+INSERT INTO `video_tag` VALUES (3244, '搞笑,恋爱', 3526);
+INSERT INTO `video_tag` VALUES (3245, '喜剧,爱情', 3527);
+INSERT INTO `video_tag` VALUES (3246, '恐怖', 3528);
+INSERT INTO `video_tag` VALUES (3247, '动画,奇幻,爱情', 3529);
+INSERT INTO `video_tag` VALUES (3248, '喜剧,动作,动画', 3530);
+INSERT INTO `video_tag` VALUES (3249, '动作,魔幻,奇幻,科幻', 3531);
+INSERT INTO `video_tag` VALUES (3250, '惊悚,动作', 3532);
+INSERT INTO `video_tag` VALUES (3251, '动作,爱情', 3533);
+INSERT INTO `video_tag` VALUES (3252, '惊悚,恐怖', 3534);
 
 SET FOREIGN_KEY_CHECKS = 1;
