@@ -326,13 +326,13 @@ router.post('/getHistory',(req,res)=>{
     res.status(200).json({code:0,message:"user_id = 0", value:[]});
     return;
   }
-  const sqlquery = `select search_history.content from search_history where user_id = '${user_id}'`;
+  const sqlquery = `select search_history.value from search_history where user_id = '${user_id}'`;
   db.model('user').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({code:-1, message: 'Failed to execute SQL query' });
     } else {
-      res.status(200).json({code:0,message:"getHistory", value:results});
+      res.status(200).json({code:0,message:"getHistory", data:results});
     };
   });
 });
@@ -340,6 +340,10 @@ router.post('/getHistory',(req,res)=>{
 //发表评论
 router.post('/makeComment',(req,res)=>{
   const {video_id,content,user_id} = req.body;
+  if(user_id === 0){
+    res.status(200).json({code:0,message:"请先登录再评论"});
+    return;
+  }
   const sqlquery = `insert into comment (video_id,content,user_id,createTime,commitLikeCount) VALUES('${video_id}','${content}','${user_id}',NOW(),FLOOR(RAND() * 100))`;
   db.model('comment').sql(sqlquery, (err, results) => {
     if (err) {
