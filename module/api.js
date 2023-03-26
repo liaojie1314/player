@@ -326,13 +326,13 @@ router.post('/getHistory',(req,res)=>{
     res.status(200).json({code:0,message:"user_id = 0", value:[]});
     return;
   }
-  const sqlquery = `select search_history.content from search_history where user_id = '${user_id}'`;
+  const sqlquery = `select search_history.value from search_history where user_id = '${user_id}'`;
   db.model('user').sql(sqlquery, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).json({code:-1, message: 'Failed to execute SQL query' });
     } else {
-      res.status(200).json({code:0,message:"getHistory", value:results});
+      res.status(200).json({code:0,message:"getHistory", data:results});
     };
   });
 });
@@ -340,6 +340,10 @@ router.post('/getHistory',(req,res)=>{
 //发表评论
 router.post('/makeComment',(req,res)=>{
   const {video_id,content,user_id} = req.body;
+  if(user_id === 0){
+    res.status(200).json({code:0,message:"请先登录再评论"});
+    return;
+  }
   const sqlquery = `insert into comment (video_id,content,user_id,createTime,commitLikeCount) VALUES('${video_id}','${content}','${user_id}',NOW(),FLOOR(RAND() * 100))`;
   db.model('comment').sql(sqlquery, (err, results) => {
     if (err) {
@@ -358,12 +362,12 @@ router.post('/getComment1', (req, res) => {
   const pagesize = req.body.pagesize || 10; // 如果未提供 pagesize 参数，默认每页显示 10 条评论
   const offset = (pagenum - 1) * pagesize; // 计算需要跳过的评论数量
   //获取评论总数
-  const queryTotal = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}'`;
+  const queryTotal = `SELECT COUNT(*) AS total FROM comment WHERE comment.video_id = '${video_id}' AND comment.rootCommentID = 0`;
   // 按照 createTime 降序排序查询符合条件的评论详细信息
   const queryByTime = `
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
     FROM user, comment 
-    WHERE video_id = '${video_id}' AND user.id = comment.user_id 
+    WHERE video_id = '${video_id}' AND user.id = comment.user_id AND comment.rootCommentID = 0
     ORDER BY createTime ASC 
     LIMIT ${offset}, ${pagesize}
   `;
@@ -372,7 +376,7 @@ router.post('/getComment1', (req, res) => {
   const queryByHot = `
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount 
     FROM user, comment 
-    WHERE video_id = '${video_id}' AND user.id = comment.user_id 
+    WHERE video_id = '${video_id}' AND user.id = comment.user_id AND comment.rootCommentID = 0
     ORDER BY commitLikeCount DESC, createTime ASC 
     LIMIT ${offset}, ${pagesize}
   `;
