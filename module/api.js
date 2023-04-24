@@ -106,10 +106,15 @@ router.post('/search', (req, res) => {
     FROM video as a, video_tag as b 
     WHERE a.name LIKE '%${msg}%' AND a.id = b.video_id 
     LIMIT ${startIndex}, ${pagesize}`;
-    
-  // 查询满足条件的数据总数
-  const countQuery = `SELECT COUNT(*) as total FROM video WHERE name LIKE '%${msg}%'`;
-  
+
+  // 查询每一种类别的数量
+  const typeQuery = `
+    SELECT COUNT(*) as count, type 
+    FROM video 
+    WHERE name LIKE '%${msg}%' 
+    GROUP BY type
+    ORDER BY type`;
+
   db.model('video').sql(searchQuery, (err, search_results) => {
     if (err) {
       console.error(err);
@@ -117,53 +122,172 @@ router.post('/search', (req, res) => {
       return;
     }
 
-    // 查询满足条件的数据总数
-    db.model('video').sql(countQuery, (err, count_result) => {
+    // 查询每一种类别的数量
+    db.model('video').sql(typeQuery, (err, type_result) => {
       if (err) {
         console.error(err);
-        res.status(500).send('Internal Server Error');
+        res.status(500).send('typeQuery Server Error');
         return;
       }
-      
-      const total = count_result[0].total; // 总数
-      // const totalPages = Math.ceil(total / pagesize); // 总页数
-      
+
       if (!search_results || search_results.length === 0) {
-        res.status(200).json({ code: 0, message: '未搜索到任何数据', data: { total, results: [] } });
+        // 构造类型计数对象
+        const responseData = {
+          animeCount: 0,
+          tvCount: 0,
+          varietyCount: 0,
+          movieCount:0,
+          results: []
+        };
+        res.status(200).json({ code: 0, message: '未搜索到任何数据', data: responseData });
         return;
       }
 
-      if (user_id === 0) {
-        res.status(200).json({ code: 0, message: 'user_id = 0', data: { total, results: search_results } });
+      else if (user_id === 0 || user_id === "0") {
+        // 构造类型计数对象
+        const typeCounts = {
+          animeCount: 0,
+          tvCount: 0,
+          varietyCount: 0,
+          movieCount: 0
+        };
+
+        // 遍历查询结果，将类型计数累加
+        for (const type of type_result) {
+          switch (type.type) {
+            case '动漫':
+              typeCounts.animeCount = type.count;
+              break;
+            case '电视剧':
+              typeCounts.tvCount = type.count;
+              break;
+            case '综艺':
+              typeCounts.varietyCount = type.count;
+              break;
+            case '电影':
+              typeCounts.movieCount = type.count;
+              break;
+            default:
+              break;
+          }
+        }
+
+        // 将类型计数对象添加到返回数据中
+        const responseData = {
+          animeCount: typeCounts.animeCount,
+          tvCount: typeCounts.tvCount,
+          varietyCount: typeCounts.varietyCount,
+          movieCount:typeCounts.movieCount,
+          results: search_results
+        };
+        res.status(200).json({ code: 0, message: 'user_id = 0', data: responseData });
         return;
       }
+      else{
+        const searchQuery2 = `SELECT count(*) as total FROM search_history WHERE value = '${msg}' AND user_id = '${user_id}'`;
+        db.model('search_history').sql(searchQuery2, (err, search_results2) => {
+          if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+          }
 
-      const searchQuery2 = `SELECT count(*) as total FROM search_history WHERE value = '${msg}' AND user_id = '${user_id}'`;
-      db.model('search_history').sql(searchQuery2, (err, search_results2) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send('Internal Server Error');
-          return;
-        }
+          if (search_results2[0].total) {
+                        // 构造类型计数对象
+                        const typeCounts = {
+                          animeCount: 0,
+                          tvCount: 0,
+                          varietyCount: 0,
+                          movieCount: 0
+                        };
+            
+                        // 遍历查询结果，将类型计数累加
+                        for (const type of type_result) {
+                          switch (type.type) {
+                            case '动漫':
+                              typeCounts.animeCount = type.count;
+                              break;
+                            case '电视剧':
+                              typeCounts.tvCount = type.count;
+                              break;
+                            case '综艺':
+                              typeCounts.varietyCount = type.count;
+                              break;
+                            case '电影':
+                              typeCounts.movieCount = type.count;
+                              break;
+                            default:
+                              break;
+                          }
+                        }
+                
+                        // 将类型计数对象添加到返回数据中
+                        const responseData = {
+                          animeCount: typeCounts.animeCount,
+                          tvCount: typeCounts.tvCount,
+                          varietyCount: typeCounts.varietyCount,
+                          movieCount:typeCounts.movieCount,
+                          results: search_results
+                        };
+            res.status(200).json({ code: 0, message: '搜索成功，但不存入', data: responseData });
+            return;
+          } else {
+            const insertQuery = `
+              INSERT INTO search_history (value, user_id)
+              VALUES ('${msg}', '${user_id}')`;
 
-        if (search_results2[0].total) {
-          res.status(200).json({ code: 0, message: '搜索成功，但不存入', data: { total, results: search_results } });
-          return;
-        } else {
-          const insertQuery = `INSERT INTO search_history (value, user_id) VALUES ('${msg}', '${user_id}')`;
-          db.model('search_history').sql(insertQuery, (err, insert_results) => {
-            if (err) {
-              console.error(err);
-              res.status(500).send('Internal Server Error');
-              return;
-            }
-            res.status(200).json({ code: 0, message: '搜索成功', data: { total, results: search_results } });
-          });
-        }
-      });
+            db.model('search_history').sql(insertQuery, (err, insert_result) => {
+              if (err) {
+                console.error(err);
+                res.status(500).send('Internal Server Error');
+                return;
+              }
+
+              // 构造类型计数对象
+              const typeCounts = {
+                animeCount: 0,
+                tvCount: 0,
+                varietyCount: 0,
+                movieCount: 0
+              };
+
+              // 遍历查询结果，将类型计数累加
+              for (const type of type_result) {
+                switch (type.type) {
+                  case '动漫':
+                    typeCounts.animeCount = type.count;
+                    break;
+                  case '电视剧':
+                    typeCounts.tvCount = type.count;
+                    break;
+                  case '综艺':
+                    typeCounts.varietyCount = type.count;
+                    break;
+                  case '电影':
+                    typeCounts.movieCount = type.count;
+                    break;
+                  default:
+                    break;
+                }
+              }
+              // 将类型计数对象添加到返回数据中
+              const responseData = {
+                animeCount: typeCounts.animeCount,
+                tvCount: typeCounts.tvCount,
+                varietyCount: typeCounts.varietyCount,
+                movieCount:typeCounts.movieCount,
+                results: search_results
+              };
+      
+              res.status(200).json({ code: 0, message: '搜索成功，并存入搜索历史', data: responseData });
+            });
+          }
+        });
+      }
     });
   });
-});
+});    
+
 
 
 //图片
@@ -441,8 +565,7 @@ router.post('/getComment1', (req, res) => {
         res.status(200).json({ code: 0, message:
           '成功', data: {
             total: total[0].total, // 评论总数
-            commentsByTime: rowsByTime, // 按照时间排序的评论列表
-            commentsByHot: rowsByHot // 按照热度排序的评论列表
+            comments: rowsByTime   //评论
           } });
         });
     });
@@ -542,7 +665,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "动漫"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "动漫" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, Anime_result) => {
       if (err) {
         console.error(err);
@@ -565,7 +688,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '电影' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "电影"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "电影" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, Movie_result) => {
       if (err) {
         console.error(err);
@@ -588,7 +711,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "综艺"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "综艺" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, variety_result) => {
       if (err) {
         console.error(err);
@@ -611,7 +734,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "电视剧"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "电视剧" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, TV_result) => {
       if (err) {
         console.error(err);
