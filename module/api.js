@@ -565,7 +565,8 @@ router.post('/getComment1', (req, res) => {
         res.status(200).json({ code: 0, message:
           '成功', data: {
             total: total[0].total, // 评论总数
-            comments: rowsByTime   //评论
+            commentsByTime: rowsByTime, // 按照时间排序的评论列表
+            commentsByHot: rowsByHot // 按照热度排序的评论列表
           } });
         });
     });
@@ -626,8 +627,7 @@ router.post('/getComment2', (req, res) => {
         res.status(200).json({ code: 0, message:
           '成功', data: {
             total: total[0].total, // 评论总数
-            commentsByTime: rowsByTime, // 按照时间排序的评论列表
-            commentsByHot: rowsByHot // 按照热度排序的评论列表
+            comments: rowsByTime
           } });
         });
     });
