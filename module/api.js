@@ -665,7 +665,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '动漫' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "动漫"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "动漫" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, Anime_result) => {
       if (err) {
         console.error(err);
@@ -688,7 +688,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '电影' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "电影"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "电影" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, Movie_result) => {
       if (err) {
         console.error(err);
@@ -711,7 +711,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '综艺' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "综艺"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "综艺" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, variety_result) => {
       if (err) {
         console.error(err);
@@ -734,7 +734,7 @@ router.post('/datetype',(req,res)=>{
     const sqlquery = `SELECT video.id, video.name, video.description, video.cover, video_tag.name as tag 
     FROM video,video_tag WHERE type = '电视剧' and video.id = video_tag.video_id and video_tag.name <> 'Unknown' 
     LIMIT ${startIndex}, ${pagesize}`;
-    const countsquery = `SELECT count(*) as total from video where video.type = "电视剧"`;
+    const countsquery = `SELECT count(*) as total from video,video_tag where video.type = "电视剧" and video.id = video_tag.video_id and video_tag.name <> 'Unknown'`;
     db.model('video').sql(sqlquery, (err, TV_result) => {
       if (err) {
         console.error(err);
