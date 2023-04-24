@@ -11,7 +11,7 @@
  Target Server Version : 80032 (8.0.32)
  File Encoding         : 65001
 
- Date: 26/03/2023 13:46:22
+ Date: 24/04/2023 15:47:06
 */
 
 SET NAMES utf8mb4;
@@ -31,18 +31,18 @@ CREATE TABLE `comment`  (
   `commitLikeCount` int NULL DEFAULT 0,
   `rootCommentID` bigint NULL DEFAULT 0,
   PRIMARY KEY (`videoCommentID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of comment
 -- ----------------------------
-INSERT INTO `comment` VALUES (1, 'the world!', '2023-03-25 16:32:20', b'0', 3, 11, 0, 0);
-INSERT INTO `comment` VALUES (2, 'the world!', '2023-03-25 16:42:32', b'0', 3, 11, 39, 2);
+INSERT INTO `comment` VALUES (1, 'the world!', '2023-03-25 16:32:20', b'0', 3, 11, 1, 0);
+INSERT INTO `comment` VALUES (2, 'the world!', '2023-03-25 16:42:32', b'0', 3, 11, 40, 2);
 INSERT INTO `comment` VALUES (3, 'wow!', '2023-03-25 16:42:51', b'0', 3, 11, 51, 0);
 INSERT INTO `comment` VALUES (4, '五卡拉卡', '2023-03-25 17:33:50', b'0', 5, 11, 69, 0);
 INSERT INTO `comment` VALUES (5, '植物打杂', '2023-03-25 17:34:10', b'0', 4, 11, 54, 0);
 INSERT INTO `comment` VALUES (6, '阿萨飒飒', '2023-03-25 17:34:17', b'0', 2, 11, 61, 0);
-INSERT INTO `comment` VALUES (7, '实打实大苏打', '2023-03-25 17:34:22', b'0', 2, 11, 45, 3);
+INSERT INTO `comment` VALUES (7, '实打实大苏打', '2023-03-25 17:34:22', b'0', 2, 11, 46, 3);
 INSERT INTO `comment` VALUES (8, '水水哇', '2023-03-25 17:34:26', b'0', 2, 11, 43, 0);
 INSERT INTO `comment` VALUES (9, '大鳄啊奋斗奋斗feds', '2023-03-25 17:34:29', b'0', 2, 11, 80, 0);
 INSERT INTO `comment` VALUES (10, '阿德阿瓦达达娃', '2023-03-25 17:34:35', b'0', 4, 11, 73, 0);
@@ -60,5 +60,9 @@ INSERT INTO `comment` VALUES (21, '商讨如何散热', '2023-03-25 17:36:26', b
 INSERT INTO `comment` VALUES (22, '而非如果如果', '2023-03-25 17:36:36', b'0', 6, 11, 33, 7);
 INSERT INTO `comment` VALUES (23, '而封杀封杀封杀', '2023-03-25 17:36:39', b'0', 6, 11, 74, 0);
 INSERT INTO `comment` VALUES (24, '警方呼吁各方一个换行符他', '2023-03-25 17:36:43', b'0', 6, 11, 71, 11);
+INSERT INTO `comment` VALUES (25, '真不错，美滋滋', '2023-03-26 17:00:04', b'0', 7, 865, 59, 0);
+INSERT INTO `comment` VALUES (26, '真不错，美滋滋', '2023-03-26 17:00:06', b'0', 7, 865, 73, 0);
+INSERT INTO `comment` VALUES (27, '评论', '2023-03-30 15:53:23', b'0', 1, 11, 47, 0);
+INSERT INTO `comment` VALUES (28, '太帅了', '2023-04-24 10:34:46', b'0', 3, 33, 55, 2);
 
 SET FOREIGN_KEY_CHECKS = 1;
