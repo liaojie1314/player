@@ -96,199 +96,102 @@ router.get('/test', (req, res) => {
 router.post('/search', (req, res) => {
   // 获取搜索内容、用户ID、页码和每页大小
   const { msg, user_id, pagenum, pagesize } = req.body;
-
   // 计算查询的起始索引
   const startIndex = (pagenum - 1) * pagesize;
 
-  // 在数据库表video中进行模糊查找，并限制返回结果的数量和起始索引
-  const searchQuery = `
-    SELECT a.id, a.name, a.cover, a.type, b.name as tag, a.description 
-    FROM video as a, video_tag as b 
-    WHERE a.name LIKE '%${msg}%' AND a.id = b.video_id 
-    LIMIT ${startIndex}, ${pagesize}`;
+  // 定义视频类型数组
+  const videoTypes = ['动漫', '电影', '电视剧', '综艺'];
 
-  // 查询每一种类别的数量
-  const typeQuery = `
-    SELECT COUNT(*) as count, type 
-    FROM video 
-    WHERE name LIKE '%${msg}%' 
-    GROUP BY type
-    ORDER BY type`;
+  // 定义视频类型映射表，将中文类型名称映射为新的名称
+  const typeMapping = {
+    '动漫': 'Animation',
+    '电影': 'Movie',
+    '电视剧': 'TV',
+    '综艺': 'Variety'
+  };
 
-  db.model('video').sql(searchQuery, (err, search_results) => {
+  // 构建 SQL 查询语句
+  const query = `SELECT a.id, a.name, a.cover, a.type, b.name as tag, a.description 
+    FROM video as a
+    JOIN video_tag as b ON a.id = b.video_id
+    WHERE a.name LIKE '%${msg}%' 
+    AND a.type IN (
+        SELECT DISTINCT type 
+        FROM video 
+        WHERE name LIKE '%${msg}%'
+    )
+    ORDER BY a.type`;
+
+  // 查询视频数据
+  db.model('video').sql(query, (err, videos) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
       return;
     }
 
-    // 查询每一种类别的数量
-    db.model('video').sql(typeQuery, (err, type_result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('typeQuery Server Error');
-        return;
-      }
+    // 构建结果集对象
+    const result = {};
 
-      if (!search_results || search_results.length === 0) {
-        // 构造类型计数对象
-        const responseData = {
-          animeCount: 0,
-          tvCount: 0,
-          varietyCount: 0,
-          movieCount:0,
-          results: []
-        };
-        res.status(200).json({ code: 0, message: '未搜索到任何数据', data: responseData });
-        return;
-      }
+    // 初始化结果集对象，将所有类型的计数设置为0，并将中文类型名称替换为新的名称
+    videoTypes.forEach(type => {
+      const newType = typeMapping[type] || type;
+      result[newType] = {
+        count: 0,
+        videos: []
+      };
+    });
 
-      else if (user_id === 0 || user_id === "0") {
-        // 构造类型计数对象
-        const typeCounts = {
-          animeCount: 0,
-          tvCount: 0,
-          varietyCount: 0,
-          movieCount: 0
-        };
-
-        // 遍历查询结果，将类型计数累加
-        for (const type of type_result) {
-          switch (type.type) {
-            case '动漫':
-              typeCounts.animeCount = type.count;
-              break;
-            case '电视剧':
-              typeCounts.tvCount = type.count;
-              break;
-            case '综艺':
-              typeCounts.varietyCount = type.count;
-              break;
-            case '电影':
-              typeCounts.movieCount = type.count;
-              break;
-            default:
-              break;
-          }
-        }
-
-        // 将类型计数对象添加到返回数据中
-        const responseData = {
-          animeCount: typeCounts.animeCount,
-          tvCount: typeCounts.tvCount,
-          varietyCount: typeCounts.varietyCount,
-          movieCount:typeCounts.movieCount,
-          results: search_results
-        };
-        res.status(200).json({ code: 0, message: 'user_id = 0', data: responseData });
-        return;
-      }
-      else{
-        const searchQuery2 = `SELECT count(*) as total FROM search_history WHERE value = '${msg}' AND user_id = '${user_id}'`;
-        db.model('search_history').sql(searchQuery2, (err, search_results2) => {
-          if (err) {
-            console.error(err);
-            res.status(500).send('Internal Server Error');
-            return;
-          }
-
-          if (search_results2[0].total) {
-                        // 构造类型计数对象
-                        const typeCounts = {
-                          animeCount: 0,
-                          tvCount: 0,
-                          varietyCount: 0,
-                          movieCount: 0
-                        };
-            
-                        // 遍历查询结果，将类型计数累加
-                        for (const type of type_result) {
-                          switch (type.type) {
-                            case '动漫':
-                              typeCounts.animeCount = type.count;
-                              break;
-                            case '电视剧':
-                              typeCounts.tvCount = type.count;
-                              break;
-                            case '综艺':
-                              typeCounts.varietyCount = type.count;
-                              break;
-                            case '电影':
-                              typeCounts.movieCount = type.count;
-                              break;
-                            default:
-                              break;
-                          }
-                        }
-                
-                        // 将类型计数对象添加到返回数据中
-                        const responseData = {
-                          animeCount: typeCounts.animeCount,
-                          tvCount: typeCounts.tvCount,
-                          varietyCount: typeCounts.varietyCount,
-                          movieCount:typeCounts.movieCount,
-                          results: search_results
-                        };
-            res.status(200).json({ code: 0, message: '搜索成功，但不存入', data: responseData });
-            return;
-          } else {
-            const insertQuery = `
-              INSERT INTO search_history (value, user_id)
-              VALUES ('${msg}', '${user_id}')`;
-
-            db.model('search_history').sql(insertQuery, (err, insert_result) => {
-              if (err) {
-                console.error(err);
-                res.status(500).send('Internal Server Error');
-                return;
-              }
-
-              // 构造类型计数对象
-              const typeCounts = {
-                animeCount: 0,
-                tvCount: 0,
-                varietyCount: 0,
-                movieCount: 0
-              };
-
-              // 遍历查询结果，将类型计数累加
-              for (const type of type_result) {
-                switch (type.type) {
-                  case '动漫':
-                    typeCounts.animeCount = type.count;
-                    break;
-                  case '电视剧':
-                    typeCounts.tvCount = type.count;
-                    break;
-                  case '综艺':
-                    typeCounts.varietyCount = type.count;
-                    break;
-                  case '电影':
-                    typeCounts.movieCount = type.count;
-                    break;
-                  default:
-                    break;
-                }
-              }
-              // 将类型计数对象添加到返回数据中
-              const responseData = {
-                animeCount: typeCounts.animeCount,
-                tvCount: typeCounts.tvCount,
-                varietyCount: typeCounts.varietyCount,
-                movieCount:typeCounts.movieCount,
-                results: search_results
-              };
-      
-              res.status(200).json({ code: 0, message: '搜索成功，并存入搜索历史', data: responseData });
-            });
-          }
-        });
+    // 按类型进行分类
+    videos.forEach(video => {
+      const newType = typeMapping[video.type] || video.type;
+      if (result[newType]) {
+        result[newType].count++;
+        result[newType].videos.push(video);
       }
     });
+
+    // 构建响应数据
+    const responseData = {
+      code: 0,
+      message: '搜索成功',
+      data: result
+    };
+
+    // 判断用户ID是否为0，如果不为0，则处理用户搜索记录
+    if (user_id !== 0) {
+      // 查询数据库是否已经存在该搜索记录
+      db.model('search_history').sql(`SELECT count(*) as total FROM search_history WHERE value = '${msg}' AND user_id = '${user_id}'`, (err, results) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Internal Server Error');
+          return;
+        }
+
+        // 如果搜索记录不存在，则插入新的搜索记录
+        if (results[0].total === 0) {
+          db.model('search_history').sql(`INSERT INTO search_history (value, user_id) VALUES ('${msg}', '${user_id}')`, (err, results) => {
+            if (err) {
+              console.error(err);
+              res.status(500).send('Internal Server Error');
+              return;
+            }
+
+            // 返回响应数据
+            res.status(200).json(responseData);
+          });
+        } else {
+          // 返回响应数据
+          res.status(200).json(responseData);
+        }
+      });
+    } else {
+      // 返回响应数据
+      res.status(200).json(responseData);
+    }
   });
-});    
-
-
+});
+   
 
 //图片
 router.get('/pictures',(req,res)=>{
@@ -565,7 +468,8 @@ router.post('/getComment1', (req, res) => {
         res.status(200).json({ code: 0, message:
           '成功', data: {
             total: total[0].total, // 评论总数
-            comments: rowsByTime   //评论
+            commentsByTime: rowsByTime, // 按照时间排序的评论列表
+            commentsByHot: rowsByHot // 按照热度排序的评论列表
           } });
         });
     });
@@ -626,8 +530,7 @@ router.post('/getComment2', (req, res) => {
         res.status(200).json({ code: 0, message:
           '成功', data: {
             total: total[0].total, // 评论总数
-            commentsByTime: rowsByTime, // 按照时间排序的评论列表
-            commentsByHot: rowsByHot // 按照热度排序的评论列表
+            comments: rowsByTime
           } });
         });
     });
