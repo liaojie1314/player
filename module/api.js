@@ -9,23 +9,24 @@ require("dotenv").config();
 router.get('/login', (req, res) => {
   res.json({message: '登录界面'});
 });
-router.post('/login', async (req, res) => {
+router.post('/login', (req, res) => {
   // 获取参数
   const { username, password, token } = req.body;
+
   // 如果有token，则尝试解密
   if (token) {
     try {
       const decoded = Token.decode(token);
       if (decoded.username === username) {
         // 如果解密成功，且用户名与请求一致，则返回登录成功,并找到user_id返回给前端
-        db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, async (err, results) => {
+        db.model('user').sql(`SELECT id FROM user WHERE name='${username}'`, (err, results) => {
           if (err) {
             console.error(err);
             res.status(500).send('login Server Error');
             return;
           }
           const user_id = results[0].id;
-          res.json({ code: 0, message: '登录成功', user_id:user_id });
+          res.json({ code: 0, message: '登录成功', user_id: user_id });
         });
         return;
       }
@@ -34,8 +35,9 @@ router.post('/login', async (req, res) => {
       // 如果解密失败，或用户名不一致，则忽略token，进行下一步验证
     }
   }
+
   // 验证用户名和密码
-  db.model('user').sql(`SELECT id, password FROM user WHERE name='${username}'`, async (err, results) => {
+  db.model('user').sql(`SELECT id, password FROM user WHERE name='${username}'`, (err, results) => {
     if (err) {
       console.error(err);
       res.status(500).send('Internal Server Error');
@@ -47,16 +49,17 @@ router.post('/login', async (req, res) => {
     }
     const user_id = results[0].id;
     const hashedPassword = results[0].password;
-    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+    const passwordMatch = bcrypt.compareSync(password, hashedPassword);
     if (passwordMatch) {
       const payload = { username };
       const newToken = Token.encode(payload);
-      res.json({ code: 0, message: '登录成功', user_id:user_id, token: newToken });
+      res.json({ code: 0, message: '登录成功', user_id: user_id, token: newToken });
     } else {
       res.json({ code: -1, message: '用户名或密码错误' });
     }
   });
 });
+
 
 //注册
 router.get('/signin', (req, res) => {
