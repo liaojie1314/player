@@ -102,10 +102,10 @@ router.post('/search', (req, res) => {
   // 计算查询的起始索引
   const startIndex = (pagenum - 1) * pagesize;
 
-  const animecount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '动漫' limit ${startIndex},${pagesize}`;
-  const moviecount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '电影' limit ${startIndex},${pagesize}`;
-  const Tvcount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '电视剧' limit ${startIndex},${pagesize}`;
-  const varietycount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '综艺' limit ${startIndex},${pagesize}`;
+  const animecount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '动漫'`;
+  const moviecount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '电影'`;
+  const Tvcount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '电视剧'`;
+  const varietycount = `SELECT count(*) as total from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '综艺'`;
   const animesql = `SELECT a.id, a.name, a.cover, a.type, b.name as tag, a.description from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '动漫' limit ${startIndex},${pagesize}`;
   const moviesql = `SELECT a.id, a.name, a.cover, a.type, b.name as tag, a.description from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '电影' limit ${startIndex},${pagesize}`;
   const Tvsql = `SELECT a.id, a.name, a.cover, a.type, b.name as tag, a.description from video as a,video_tag as b WHERE a.id = b.video_id and a.NAME LIKE '%${msg}%' and a.type = '电视剧' limit ${startIndex},${pagesize}`;
@@ -441,10 +441,10 @@ router.post('/getComment1', (req, res) => {
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount,
     IF(COUNT(cl.id) > 0, 1, 0) AS is_thumbup
     FROM user, comment 
-    LEFT JOIN Comment_Like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
+    LEFT JOIN comment_like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
     WHERE video_id = '${video_id}' AND user.id = comment.user_id AND comment.rootCommentID = 0
     GROUP BY comment.videoCommentID
-    ORDER BY createTime ASC 
+    ORDER BY createTime DESC
     LIMIT ${offset}, ${pagesize}
   `;
   
@@ -453,10 +453,10 @@ router.post('/getComment1', (req, res) => {
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount,
     IF(COUNT(cl.id) > 0, 1, 0) AS is_thumbup
     FROM user, comment 
-    LEFT JOIN Comment_Like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
+    LEFT JOIN comment_like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
     WHERE video_id = '${video_id}' AND user.id = comment.user_id AND comment.rootCommentID = 0
     GROUP BY comment.videoCommentID
-    ORDER BY commitLikeCount DESC, createTime ASC 
+    ORDER BY commitLikeCount DESC, createTime DESC
     LIMIT ${offset}, ${pagesize}
   `;
 
@@ -503,7 +503,7 @@ router.post('/getComment2', (req, res) => {
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount,
     IF(COUNT(cl.id) > 0, 1, 0) AS is_thumbup
     FROM user, comment 
-    LEFT JOIN Comment_Like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
+    LEFT JOIN comment_like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
     WHERE comment.rootCommentID = '${videoCommentid}' AND user.id = comment.user_id
     GROUP BY comment.videoCommentID
     ORDER BY createTime ASC 
@@ -515,7 +515,7 @@ router.post('/getComment2', (req, res) => {
     SELECT comment.videoCommentID AS id, user.name AS nickname, content, DATE_FORMAT(createTime, '%Y-%m-%d %H:%i:%s') AS createTime, commitLikeCount,
     IF(COUNT(cl.id) > 0, 1, 0) AS is_thumbup
     FROM user, comment 
-    LEFT JOIN Comment_Like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
+    LEFT JOIN comment_like cl ON comment.videoCommentID = cl.comment_id AND cl.user_id = '${user_id}'
     WHERE comment.rootCommentID = '${videoCommentid}' AND user.id = comment.user_id
     GROUP BY comment.videoCommentID
     ORDER BY commitLikeCount DESC, createTime ASC 
